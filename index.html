@@ -1,0 +1,1494 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="h-full">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>A Anatomia dos Worms // Ensaio Visual Interativo</title>
+  <meta name="description"
+    content="Uma exploração visual e interativa sobre como vermes de rede se propagam, suas origens históricas e os mecanismos para contê-los.">
+
+  <!-- Tipografia Editorial: Newsreader (serif editorial elegante) + Inter (sans-serif precisa) + JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&display=swap"
+    rel="stylesheet">
+
+  <!-- Tailwind CSS via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            serif: ['Newsreader', 'Georgia', 'serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          colors: {
+            paper: {
+              950: '#090d16',
+              900: '#0e1424',
+              850: '#141d33',
+              800: '#1c2844',
+              border: '#233254',
+              muted: '#7e8ea6',
+              text: '#e2e8f0',
+              accent: '#38bdf8',     // Sky Blue
+              coral: '#f43f5e',      // Vibrant Coral
+              amber: '#fbbf24',      // Warm Gold
+              emerald: '#10b981'     // Sage Emerald
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* Estilos e Transições Editoriais Suaves */
+    html,
+    body {
+      background-color: #090d16;
+      color: #e2e8f0;
+      font-family: 'Inter', sans-serif;
+      overflow-x: hidden;
+    }
+
+    .font-serif-italic {
+      font-family: 'Newsreader', Georgia, serif;
+      font-style: italic;
+    }
+
+    /* Transição suave entre Cenas */
+    .scene-view {
+      opacity: 0;
+      transform: translateY(12px) scale(0.995);
+      transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1), transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      display: none;
+    }
+
+    .scene-view.active {
+      display: flex;
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+
+    /* Micro-animação para nós de rede */
+    @keyframes pulseNode {
+
+      0%,
+      100% {
+        transform: scale(1);
+      }
+
+      50% {
+        transform: scale(1.15);
+      }
+    }
+
+    .node-pulse {
+      animation: pulseNode 2s infinite ease-in-out;
+      transform-origin: center;
+    }
+
+    /* Scrollbar minimalista */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: #090d16;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #233254;
+      border-radius: 3px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: #38bdf8;
+    }
+  </style>
+</head>
+
+<body class="h-full flex flex-col antialiased selection:bg-sky-500/30 selection:text-sky-200">
+
+  <!-- ======================================================================
+       BARRA DE CONTROLE EDITORIAL SUPERIOR
+       ====================================================================== -->
+  <header
+    class="border-b border-paper-border/80 bg-paper-950/90 backdrop-blur-md sticky top-0 z-50 px-4 md:px-8 py-3.5">
+    <div class="max-w-6xl mx-auto flex items-center justify-between gap-4">
+
+      <!-- Identificação Editorial -->
+      <div class="flex items-center gap-3">
+        <a href="javascript:void(0)" onclick="goToScene(0)" class="flex items-center gap-2 group">
+          <span class="w-2.5 h-2.5 rounded-full bg-paper-coral group-hover:scale-125 transition-transform"></span>
+          <span
+            class="font-serif text-lg tracking-tight font-medium text-slate-100 group-hover:text-sky-300 transition-colors">
+            A Anatomia dos Worms
+          </span>
+        </a>
+        <span class="text-xs font-mono text-paper-muted hidden sm:inline-block border-l border-paper-border pl-3">
+          Ensaio Visual Interativo
+        </span>
+      </div>
+
+      <!-- Indicador e Seletor de Cenas -->
+      <div class="flex items-center gap-3">
+        <button id="btnOpenIndex"
+          class="px-2.5 py-1 rounded border border-paper-border hover:border-sky-400/50 bg-paper-900 text-xs font-mono text-paper-muted hover:text-slate-100 transition-all flex items-center gap-1.5"
+          title="Abrir Índice de Cenas">
+          <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7" />
+          </svg>
+          <span id="txtSceneIndicator">Cena 01 / 18</span>
+        </button>
+
+        <!-- Navegação Anterior / Próxima -->
+        <div class="flex items-center gap-1 bg-paper-900 border border-paper-border rounded-lg p-0.5">
+          <button id="btnPrevScene"
+            class="p-1.5 rounded text-paper-muted hover:text-white hover:bg-paper-800 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+            aria-label="Cena Anterior" title="Voltar (Seta Esquerda)">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+            </svg>
+          </button>
+          <button id="btnNextScene"
+            class="p-1.5 rounded text-paper-muted hover:text-white hover:bg-paper-800 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+            aria-label="Próxima Cena" title="Avançar (Seta Direita ou Espaço)">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Barra de Progresso Fluida no Rodapé do Header -->
+    <div class="w-full bg-paper-900 h-[2px] absolute bottom-0 left-0">
+      <div id="topProgressBar"
+        class="h-full bg-gradient-to-r from-sky-400 via-paper-coral to-amber-400 transition-all duration-300"
+        style="width: 5.5%;"></div>
+    </div>
+  </header>
+
+  <!-- ======================================================================
+       MENU / MODAL DE ÍNDICE DE CENAS (SALTO LIVRE)
+       ====================================================================== -->
+  <div id="indexDrawer"
+    class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div
+      class="bg-paper-900 border border-paper-border rounded-2xl max-w-2xl w-full max-h-[85vh] flex flex-col shadow-2xl overflow-hidden">
+      <div class="p-4 border-b border-paper-border flex items-center justify-between">
+        <div>
+          <h3 class="font-serif text-lg font-medium text-slate-100">Sumário da Apresentação</h3>
+          <p class="text-xs font-mono text-paper-muted">Pule livremente para qualquer momento da narrativa visual</p>
+        </div>
+        <button id="btnCloseIndex"
+          class="p-1.5 rounded-lg text-paper-muted hover:text-white hover:bg-paper-800 transition-colors">
+          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+      <div id="indexList" class="p-4 overflow-y-auto space-y-1.5 font-mono text-xs">
+        <!-- Itens preenchidos dinamicamente pelo script -->
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================================================================
+       PALCO PRINCIPAL: AS 18 CENAS DA NARRATIVA
+       ====================================================================== -->
+  <main class="flex-1 flex flex-col justify-center items-center p-4 md:p-8 max-w-5xl mx-auto w-full">
+
+    <!-- --------------------------------------------------------------------
+         CENA 01 — O Incidente
+         -------------------------------------------------------------------- -->
+    <section id="scene-0"
+      class="scene-view active flex-col items-center justify-center w-full space-y-8 text-center my-auto">
+      <div class="space-y-3 max-w-2xl">
+        <span class="text-xs font-mono tracking-widest uppercase text-paper-coral font-semibold">Cena 01 • O
+          Incidente</span>
+        <h1 class="font-serif text-3xl sm:text-4xl md:text-5xl font-medium tracking-tight text-slate-100 leading-tight">
+          Silenciosamente, a rede começa a mudar.
+        </h1>
+        <p class="text-paper-muted text-sm md:text-base font-light leading-relaxed">
+          Nenhum anexo foi aberto. Nenhum link suspeito foi clicado. Um computador muda de estado. Em segundos, outro
+          responde.
+        </p>
+      </div>
+
+      <!-- Demonstração Visual: Grafo de Rede Orgânico -->
+      <div
+        class="w-full max-w-xl p-6 rounded-2xl bg-paper-900 border border-paper-border relative overflow-hidden shadow-2xl">
+        <div class="flex items-center justify-between mb-4 text-xs font-mono text-paper-muted">
+          <span>Topologia Local: 30 Nós</span>
+          <button id="btnReplayScene1" class="text-sky-400 hover:text-sky-300 flex items-center gap-1">
+            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+            </svg>
+            Repetir Propagação
+          </button>
+        </div>
+        <div id="networkGridScene1" class="grid grid-cols-6 sm:grid-cols-10 gap-3 py-4 place-items-center">
+          <!-- Gerado dinamicamente -->
+        </div>
+        <div class="mt-4 text-xs font-serif-italic text-slate-400 text-center">
+          "Como isso começou?"
+        </div>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <button onclick="nextScene()"
+          class="px-5 py-2.5 rounded-xl bg-slate-100 hover:bg-white text-paper-950 font-medium text-xs md:text-sm transition-all flex items-center gap-2 shadow-lg">
+          Iniciar Exploração Visual
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+          </svg>
+        </button>
+      </div>
+    </section>
+
+    <!-- --------------------------------------------------------------------
+         CENA 02 — A Pergunta
+         -------------------------------------------------------------------- -->
+    <section id="scene-1"
+      class="scene-view flex-col items-center justify-center w-full max-w-3xl space-y-8 text-center my-auto">
+      <span class="text-xs font-mono tracking-widest uppercase text-sky-400 font-semibold">Cena 02 • A Pergunta
+        Central</span>
+
+      <blockquote
+        class="font-serif text-3xl sm:text-4xl md:text-5xl font-normal text-slate-100 leading-tight max-w-2xl">
+        “Como um único computador pode colocar uma rede inteira em risco?”
+      </blockquote>
+
+      <p class="text-paper-muted text-base md:text-lg font-light leading-relaxed max-w-xl">
+        Na maioria das ameaças digitais, a falha reside na curiosidade do usuário. Aqui, a vulnerabilidade está na
+        própria arquitetura de comunicação entre máquinas.
+      </p>
+
+      <!-- Pequena reflexão sem bloqueio -->
+      <div class="w-full max-w-lg p-5 rounded-2xl bg-paper-900/60 border border-paper-border text-left space-y-3">
+        <span class="text-xs font-mono text-amber-400 font-semibold uppercase tracking-wider block">Pausa
+          Reflexiva</span>
+        <p class="text-xs text-slate-300">
+          Você já parou para pensar em quantas portas de conversa um computador comum mantém abertas apenas para
+          compartilhar impressoras e arquivos?
+        </p>
+        <div class="flex gap-2">
+          <button
+            onclick="revealReflectiveAnswer(this, 'Um sistema operacional moderno mantém dezenas de portas escutando requisições em segundo plano sem que você perceba.')"
+            class="px-3 py-1.5 rounded-lg bg-paper-800 hover:bg-paper-850 text-xs text-slate-300 font-mono transition-colors">
+            Descobrir o porquê
+          </button>
+        </div>
+        <div class="hidden text-xs text-sky-300 font-mono bg-paper-950 p-2.5 rounded-lg border border-paper-border">
+        </div>
+      </div>
+    </section>
+
+    <!-- --------------------------------------------------------------------
+         CENA 03 — O Conceito
+         -------------------------------------------------------------------- -->
+    <section id="scene-2" class="scene-view flex-col items-center justify-center w-full max-w-4xl space-y-8 my-auto">
+      <div class="text-center space-y-2">
+        <span class="text-xs font-mono tracking-widest uppercase text-sky-400 font-semibold">Cena 03 • O Conceito</span>
+        <h2 class="font-serif text-3xl md:text-4xl text-slate-100">A Equação da Autonomia</h2>
+        <p class="text-paper-muted text-sm max-w-lg mx-auto">
+          Um worm não é uma entidade mágica; é a fusão precisa de três propriedades computacionais fundamentais.
+        </p>
+      </div>
+
+      <!-- Equação Visual Interativa -->
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-3 w-full items-center">
+
+        <div
+          class="p-5 rounded-2xl bg-paper-900 border border-paper-border text-center space-y-2 hover:border-sky-400/40 transition-colors">
+          <div
+            class="w-10 h-10 rounded-xl bg-sky-500/10 text-sky-400 mx-auto flex items-center justify-center font-mono font-bold">
+            1</div>
+          <h3 class="font-semibold text-slate-200 text-sm">Programa Autônomo</h3>
+          <p class="text-xs text-paper-muted leading-relaxed">
+            Não é um fragmento de código perdido. É um executável completo que roda por conta própria.
+          </p>
+        </div>
+
+        <div
+          class="p-5 rounded-2xl bg-paper-900 border border-paper-border text-center space-y-2 hover:border-sky-400/40 transition-colors">
+          <div
+            class="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-400 mx-auto flex items-center justify-center font-mono font-bold">
+            2</div>
+          <h3 class="font-semibold text-slate-200 text-sm">Motor de Replicação</h3>
+          <p class="text-xs text-paper-muted leading-relaxed">
+            Capacidade intrínseca de gerar cópias idênticas e operacionais de si mesmo.
+          </p>
+        </div>
+
+        <div
+          class="p-5 rounded-2xl bg-paper-900 border border-paper-border text-center space-y-2 hover:border-sky-400/40 transition-colors">
+          <div
+            class="w-10 h-10 rounded-xl bg-paper-coral/10 text-paper-coral mx-auto flex items-center justify-center font-mono font-bold">
+            3</div>
+          <h3 class="font-semibold text-slate-200 text-sm">Propagação em Rede</h3>
+          <p class="text-xs text-paper-muted leading-relaxed">
+            Usa as artérias e protocolos da rede para viajar sozinho de um IP para outro.
+          </p>
+        </div>
+
+        <div
+          class="p-5 rounded-2xl bg-gradient-to-br from-paper-coral/20 to-sky-500/20 border border-paper-coral/40 text-center space-y-2 shadow-xl">
+          <span class="text-[10px] font-mono uppercase tracking-wider text-paper-coral font-bold block">Resultado</span>
+          <h3 class="font-serif text-2xl text-white font-medium">WORM</h3>
+          <p class="text-xs text-slate-300">
+            Disseminação em massa sem necessidade de arquivo hospedeiro.
+          </p>
+        </div>
+      </div>
+
+      <div
+        class="p-4 rounded-xl bg-paper-900/60 border border-paper-border text-xs text-slate-300 font-mono text-center max-w-xl">
+        Definição: <span class="text-sky-300">Programa</span> + <span class="text-amber-300">Replicação</span> + <span
+          class="text-rose-300">Propagação Autônoma</span> = <strong class="text-white">Worm de Rede</strong>.
+      </div>
+    </section>
+
+    <!-- --------------------------------------------------------------------
+         CENA 04 — O Diferencial (Vírus vs Worm vs Trojan)
+         -------------------------------------------------------------------- -->
+    <section id="scene-3" class="scene-view flex-col items-center justify-center w-full max-w-4xl space-y-8 my-auto">
+      <div class="text-center space-y-2">
+        <span class="text-xs font-mono tracking-widest uppercase text-sky-400 font-semibold">Cena 04 • O
+          Diferencial</span>
+        <h2 class="font-serif text-3xl md:text-4xl text-slate-100">Não chame tudo de "Vírus"</h2>
+        <p class="text-paper-muted text-sm max-w-lg mx-auto">
+          Cada ameaça opera em uma camada ontológica diferente. Observe o que cada uma ataca:
+        </p>
+      </div>
+
+      <!-- Comparativo Visual Dinâmico -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 w-full">
+
+        <!-- Vírus -->
+        <div
+          class="p-6 rounded-2xl bg-paper-900 border border-paper-border flex flex-col justify-between space-y-4 hover:border-slate-600 transition-colors">
+          <div class="space-y-2">
+            <span class="text-xs font-mono text-amber-400 font-semibold uppercase">O Parasita</span>
+            <h3 class="font-serif text-xl text-slate-100">Vírus</h3>
+            <p class="text-xs text-paper-muted leading-relaxed">
+              Infecta <strong>arquivos</strong> (.exe, .doc). Como um vírus biológico, não tem vida própria: depende que
+              o humano execute o arquivo contaminado para acordar.
+            </p>
+          </div>
+          <div
+            class="p-3 rounded-xl bg-paper-950 border border-paper-border text-center text-xs font-mono text-amber-300">
+            Alvo: Arquivo Hospedeiro
+          </div>
+        </div>
+
+        <!-- Worm -->
+        <div
+          class="p-6 rounded-2xl bg-paper-900 border-2 border-sky-400/50 flex flex-col justify-between space-y-4 shadow-xl shadow-sky-500/5">
+          <div class="space-y-2">
+            <span class="text-xs font-mono text-sky-400 font-semibold uppercase">O Viajante Autônomo</span>
+            <h3 class="font-serif text-xl text-slate-100">Worm</h3>
+            <p class="text-xs text-paper-muted leading-relaxed">
+              Explora a <strong>rede e sistemas</strong>. Não precisa de arquivo hospedeiro nem de ação humana. Viaja
+              pelos cabos e portas abertas sozinho.
+            </p>
+          </div>
+          <div
+            class="p-3 rounded-xl bg-sky-950/60 border border-sky-800 text-center text-xs font-mono text-sky-300 font-bold">
+            Alvo: Portas e Serviços de Rede
+          </div>
+        </div>
+
+        <!-- Trojan -->
+        <div
+          class="p-6 rounded-2xl bg-paper-900 border border-paper-border flex flex-col justify-between space-y-4 hover:border-slate-600 transition-colors">
+          <div class="space-y-2">
+            <span class="text-xs font-mono text-paper-coral font-semibold uppercase">O Disfarce</span>
+            <h3 class="font-serif text-xl text-slate-100">Trojan</h3>
+            <p class="text-xs text-paper-muted leading-relaxed">
+              Engana o <strong>usuário</strong>. Parece um jogo ou aplicativo útil, mas abre uma porta dos fundos.
+              Geralmente <em>não se auto-replica</em>.
+            </p>
+          </div>
+          <div
+            class="p-3 rounded-xl bg-paper-950 border border-paper-border text-center text-xs font-mono text-rose-300">
+            Alvo: Confiança Humana
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- --------------------------------------------------------------------
+         CENA 05 — Linha do Tempo Histórica
+         -------------------------------------------------------------------- -->
+    <section id="scene-4" class="scene-view flex-col items-center justify-center w-full max-w-4xl space-y-8 my-auto">
+      <div class="text-center space-y-2">
+        <span class="text-xs font-mono tracking-widest uppercase text-sky-400 font-semibold">Cena 05 • Perspectiva
+          Histórica</span>
+        <h2 class="font-serif text-3xl md:text-4xl text-slate-100">De laboratório à escala global</h2>
+        <p class="text-paper-muted text-sm max-w-lg mx-auto">
+          Navegue pela evolução temporal: como a auto-replicação nasceu como curiosidade e se tornou crise.
+        </p>
+      </div>
+
+      <!-- Slider Horizontal Interativo -->
+      <div class="w-full p-6 rounded-2xl bg-paper-900 border border-paper-border space-y-6">
+        <div
+          class="flex items-center justify-between text-xs font-mono text-paper-muted border-b border-paper-border pb-3">
+          <span>Selecione o Marco Histórico:</span>
+          <span id="txtTimelineYear" class="text-sky-400 font-bold text-sm">1971</span>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-3">
+          <button onclick="setHistoryEra(0)"
+            class="timeline-tab px-3 py-1.5 rounded-lg border border-sky-400 bg-sky-500/20 text-sky-200 text-xs font-mono transition-all">1971
+            • Creeper</button>
+          <button onclick="setHistoryEra(1)"
+            class="timeline-tab px-3 py-1.5 rounded-lg border border-paper-border hover:border-slate-500 text-paper-muted text-xs font-mono transition-all">1972
+            • Reaper</button>
+          <button onclick="setHistoryEra(2)"
+            class="timeline-tab px-3 py-1.5 rounded-lg border border-paper-border hover:border-slate-500 text-paper-muted text-xs font-mono transition-all">1988
+            • Morris Worm</button>
+          <button onclick="setHistoryEra(3)"
+            class="timeline-tab px-3 py-1.5 rounded-lg border border-paper-border hover:border-slate-500 text-paper-muted text-xs font-mono transition-all">2000s
+            • Era Moderna</button>
+        </div>
+
+        <div id="historyContentBox" class="p-6 rounded-xl bg-paper-950 border border-paper-border space-y-3 text-left">
+          <!-- Conteúdo dinâmico da era -->
+        </div>
+      </div>
+    </section>
+
+    <!-- --------------------------------------------------------------------
+         CENA 06 — Creeper (1971)
+         -------------------------------------------------------------------- -->
+    <section id="scene-5" class="scene-view flex-col items-center justify-center w-full max-w-4xl space-y-8 my-auto">
+      <div class="text-center space-y-2">
+        <span class="text-xs font-mono tracking-widest uppercase text-paper-coral font-semibold">Cena 06 • O Pioneiro
+          (1971)</span>
+        <h2 class="font-serif text-3xl md:text-4xl text-slate-100">Creeper: O Primeiro Salto Autônomo</h2>
+        <p class="text-paper-muted text-sm max-w-lg mx-auto">
+          Bob Thomas criou o Creeper para responder a uma dúvida teórica: um processo em execução pode migrar de máquina
+          sem intervenção humana?
+        </p>
+      </div>
+
+      <div class="w-full p-6 rounded-2xl bg-paper-900 border border-paper-border space-y-6">
+        <div class="flex items-center justify-between text-xs font-mono text-paper-muted">
+          <span>Ambiente: ARPANET (Computadores PDP-10 / Sistema TENEX)</span>
+          <button onclick="runCreeperJumpDemo()" class="text-sky-400 hover:text-sky-300 font-mono">Disparar
+            Salto</button>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4" id="creeperJumpGrid">
+          <div class="p-4 rounded-xl bg-paper-950 border border-paper-border text-center space-y-2" id="nodeCreeperA">
+            <span class="text-[10px] font-mono text-paper-muted">PDP-10 • MAQUINA A</span>
+            <div class="status-badge text-xs font-mono text-paper-coral font-bold">Creeper Executando</div>
+            <p class="text-[11px] text-slate-400">Imprime mensagem e prepara transmissão do binário.</p>
+          </div>
+          <div class="p-4 rounded-xl bg-paper-950 border border-paper-border text-center space-y-2" id="nodeCreeperB">
+            <span class="text-[10px] font-mono text-paper-muted">PDP-10 • MAQUINA B</span>
+            <div class="status-badge text-xs font-mono text-slate-500">Aguardando Conexão</div>
+            <p class="text-[11px] text-slate-400">Pronto para receber o processo via rede.</p>
+          </div>
+          <div class="p-4 rounded-xl bg-paper-950 border border-paper-border text-center space-y-2" id="nodeCreeperC">
+            <span class="text-[10px] font-mono text-paper-muted">PDP-10 • MAQUINA C</span>
+            <div class="status-badge text-xs font-mono text-slate-500">Ocioso</div>
+            <p class="text-[11px] text-slate-400">Próximo nó da rota na ARPANET.</p>
+          </div>
+        </div>
+
+        <div
+          class="p-4 rounded-xl bg-paper-950 border border-paper-border text-xs text-slate-300 font-mono text-center">
+          Mensagem na Tela: <span class="text-paper-coral font-sans font-medium italic">"I'M THE CREEPER: CATCH ME IF
+            YOU CAN!"</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- --------------------------------------------------------------------
+         CENA 07 — Reaper (1972)
+         -------------------------------------------------------------------- -->
+    <section id="scene-6" class="scene-view flex-col items-center justify-center w-full max-w-4xl space-y-8 my-auto">
+      <div class="text-center space-y-2">
+        <span class="text-xs font-mono tracking-widest uppercase text-emerald-400 font-semibold">Cena 07 • O Caçador
+          (1972)</span>
+        <h2 class="font-serif text-3xl md:text-4xl text-slate-100">Reaper: O Primeiro "Antivírus"</h2>
+        <p class="text-paper-muted text-sm max-w-lg mx-auto">
+          Ray Tomlinson percebeu que a única entidade capaz de perseguir um código auto-replicante na mesma velocidade
+          era outro código auto-replicante.
+        </p>
+      </div>
+
+      <div class="w-full p-6 rounded-2xl bg-paper-900 border border-paper-border space-y-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-left">
+          <div class="p-5 rounded-xl bg-paper-950 border border-paper-border space-y-2">
+            <span class="text-xs font-mono text-paper-coral font-semibold">A Presa (Creeper)</span>
+            <p class="text-xs text-paper-muted leading-relaxed">
+              Saltava entre nós ocupando a memória e imprimindo mensagens. Não limpava seu rastro adequadamente,
+              deixando instâncias para trás.
+            </p>
+          </div>
+          <div class="p-5 rounded-xl bg-paper-950 border border-emerald-500/40 space-y-2">
+            <span class="text-xs font-mono text-emerald-400 font-semibold">O Predador (Reaper)</span>
+            <p class="text-xs text-paper-muted leading-relaxed">
+              Viajava pela ARPANET com uma missão exclusiva: inspecionar processos ativos, detectar o Creeper,
+              eliminá-lo da memória e seguir para o próximo nó.
+            </p>
+          </div>
+        </div>
+
+        <div
+          class="p-4 rounded-xl bg-paper-850/60 border border-paper-border text-xs text-slate-300 font-mono text-center">
+          Conceito Histórico: A defesa em segurança da informação nasceu espelhando os mesmos mecanismos do ataque.
+        </div>
+      </div>
+    </section>
+
+    <!-- --------------------------------------------------------------------
+         CENA 08 — Morris Worm (1988)
+         -------------------------------------------------------------------- -->
+    <section id="scene-7"
+      class="scene-view flex-col items-center justify-center w-full max-w-3xl space-y-8 text-center my-auto">
+      <span class="text-xs font-mono tracking-widest uppercase text-paper-coral font-semibold">Cena 08 • O Marco da
+        Sobrecarga</span>
+
+      <h2 class="font-serif text-3xl sm:text-4xl text-slate-100 leading-tight">
+        1988: O dia em que 10% da Internet congelou
+      </h2>
+
+      <p class="text-paper-muted text-base font-light leading-relaxed max-w-xl">
+        Robert Tappan Morris não queria roubar segredos nem chantagear empresas. Ele queria medir o tamanho da rede. Mas
+        cometeu um erro grave no algoritmo.
+      </p>
+
+      <!-- Pergunta Reflexiva Interativa -->
+      <div class="w-full max-w-xl p-6 rounded-2xl bg-paper-900 border border-paper-border text-left space-y-4">
+        <h4 class="text-sm font-semibold text-slate-100">
+          Pergunta Reflexiva: O Morris Worm precisava apagar arquivos para causar estragos milionários?
+        </h4>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3" id="morrisQuestionBtns">
+          <button onclick="revealMorrisAnswer(this, true)"
+            class="p-3 rounded-xl bg-paper-800 hover:bg-paper-850 border border-paper-border text-xs text-slate-200 text-left font-mono transition-all">
+            Não. A própria replicação desenfreada consumiu CPU e memória até travar os nós.
+          </button>
+          <button onclick="revealMorrisAnswer(this, false)"
+            class="p-3 rounded-xl bg-paper-800 hover:bg-paper-850 border border-paper-border text-xs text-slate-200 text-left font-mono transition-all">
+            Sim. Ele corrompia as tabelas de partição de todos os computadores.
+          </button>
+        </div>
+
+        <div id="morrisAnswerBox"
+          class="hidden p-4 rounded-xl bg-paper-950 border border-paper-border text-xs text-slate-300 leading-relaxed font-sans">
+          <!-- Resposta imediata -->
+        </div>
+      </div>
+    </section>
+
+    <!-- --------------------------------------------------------------------
+         CENA 09 — Ciclo de Vida
+         -------------------------------------------------------------------- -->
+    <section id="scene-8" class="scene-view flex-col items-center justify-center w-full max-w-4xl space-y-8 my-auto">
+      <div class="text-center space-y-2">
+        <span class="text-xs font-mono tracking-widest uppercase text-sky-400 font-semibold">Cena 09 • A Máquina de
+          Estados</span>
+        <h2 class="font-serif text-3xl md:text-4xl text-slate-100">O Ciclo de Vida Contínuo</h2>
+        <p class="text-paper-muted text-sm max-w-lg mx-auto">
+          Clique nos blocos para entender as 6 fases que se repetem indefinidamente a cada nó conquistado:
+        </p>
+      </div>
+
+      <!-- Diagrama de Blocos Interativo -->
+      <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2 w-full" id="lifecycleStepsContainer">
+        <!-- 6 blocos sequenciais gerados via JS -->
+      </div>
+
+      <div id="lifecycleDetailCard"
+        class="w-full p-6 rounded-2xl bg-paper-900 border border-paper-border space-y-2 text-left">
+        <div class="flex items-center justify-between text-xs font-mono text-sky-400">
+          <span id="lifecycleDetailStep">Etapa 1 de 6</span>
+          <span class="text-paper-muted">Interativo</span>
+        </div>
+        <h3 id="lifecycleDetailTitle" class="font-serif text-xl text-slate-100">1. Descoberta (Scanning)</h3>
+        <p id="lifecycleDetailDesc" class="text-sm text-paper-muted leading-relaxed">
+          O worm gera endereços IP e envia sondas para portas de rede buscando computadores que estejam online e
+          escutando conexões.
+        </p>
+      </div>
+    </section>
+
+    <!-- --------------------------------------------------------------------
+         CENA 10 — Descoberta (Port Scanning)
+         -------------------------------------------------------------------- -->
+    <section id="scene-9" class="scene-view flex-col items-center justify-center w-full max-w-4xl space-y-8 my-auto">
+      <div class="text-center space-y-2">
+        <span class="text-xs font-mono tracking-widest uppercase text-sky-400 font-semibold">Cena 10 • Descoberta</span>
+        <h2 class="font-serif text-3xl md:text-4xl text-slate-100">A Varredura de Portas (Port Scanning)</h2>
+        <p class="text-paper-muted text-sm max-w-lg mx-auto">
+          O worm não adivinha quem está online: ele bate metodicamente em milhares de portas por minuto.
+        </p>
+      </div>
+
+      <!-- Simulador Visual de Port Scanning -->
+      <div class="w-full max-w-xl p-6 rounded-2xl bg-paper-900 border border-paper-border space-y-4">
+        <div class="flex items-center justify-between text-xs font-mono text-paper-muted">
+          <span>Sonda Direcionada: IP 192.168.1.45</span>
+          <button id="btnScanPorts" class="text-sky-400 hover:text-sky-300 font-mono">Disparar Sonda TCP SYN</button>
+        </div>
+        <div class="space-y-2 font-mono text-xs" id="portScanResults">
+          <!-- Portas 22, 80, 445, 3389 -->
+        </div>
+        <p class="text-[11px] text-paper-muted font-mono text-center">
+          Ao encontrar a porta 445/SMB aberta e sem proteção, o worm identifica o alvo vulnerável perfeito.
+        </p>
+      </div>
+    </section>
+
+    <!-- --------------------------------------------------------------------
+         CENA 11 — A Cadeia de Exposição
+         -------------------------------------------------------------------- -->
+    <section id="scene-10" class="scene-view flex-col items-center justify-center w-full max-w-4xl space-y-8 my-auto">
+      <div class="text-center space-y-2">
+        <span class="text-xs font-mono tracking-widest uppercase text-sky-400 font-semibold">Cena 11 • A Anatomia do
+          Alvo</span>
+        <h2 class="font-serif text-3xl md:text-4xl text-slate-100">A Cadeia de Exposição</h2>
+        <p class="text-paper-muted text-sm max-w-lg mx-auto">
+          Como a infraestrutura corporativa cria o caminho para o comprometimento:
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-4 gap-4 w-full text-left">
+        <div class="p-5 rounded-2xl bg-paper-900 border border-paper-border space-y-2">
+          <span
+            class="w-7 h-7 rounded-full bg-paper-800 text-sky-400 font-mono text-xs flex items-center justify-center">1</span>
+          <h4 class="text-sm font-semibold text-slate-200">Computador Ativo</h4>
+          <p class="text-xs text-paper-muted leading-relaxed">Possui um endereço IP conectado à rede corporativa.</p>
+        </div>
+
+        <div class="p-5 rounded-2xl bg-paper-900 border border-paper-border space-y-2">
+          <span
+            class="w-7 h-7 rounded-full bg-paper-800 text-sky-400 font-mono text-xs flex items-center justify-center">2</span>
+          <h4 class="text-sm font-semibold text-slate-200">Serviço Ouvinte</h4>
+          <p class="text-xs text-paper-muted leading-relaxed">Um programa rodando em segundo plano (compartilhamento
+            SMB, banco de dados).</p>
+        </div>
+
+        <div class="p-5 rounded-2xl bg-paper-900 border border-paper-border space-y-2">
+          <span
+            class="w-7 h-7 rounded-full bg-paper-800 text-sky-400 font-mono text-xs flex items-center justify-center">3</span>
+          <h4 class="text-sm font-semibold text-slate-200">Comunicação Aberta</h4>
+          <p class="text-xs text-paper-muted leading-relaxed">O serviço responde a pacotes da rede interna sem exigir
+            autenticação prévia.</p>
+        </div>
+
+        <div class="p-5 rounded-2xl bg-paper-900 border border-paper-coral/50 space-y-2 bg-rose-950/10">
+          <span
+            class="w-7 h-7 rounded-full bg-paper-coral/20 text-paper-coral font-mono text-xs flex items-center justify-center font-bold">4</span>
+          <h4 class="text-sm font-semibold text-paper-coral">A Vulnerabilidade</h4>
+          <p class="text-xs text-paper-muted leading-relaxed">Uma falha no tratamento de memória permite injeção de
+            código remoto.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- --------------------------------------------------------------------
+         CENA 12 — A Vulnerabilidade
+         -------------------------------------------------------------------- -->
+    <section id="scene-11"
+      class="scene-view flex-col items-center justify-center w-full max-w-3xl space-y-8 text-center my-auto">
+      <div class="space-y-2">
+        <span class="text-xs font-mono tracking-widest uppercase text-sky-400 font-semibold">Cena 12 • A Analogia
+          Visual</span>
+        <h2 class="font-serif text-3xl sm:text-4xl text-slate-100">Uma Fechadura com Folga</h2>
+        <p class="text-paper-muted text-sm max-w-lg mx-auto">
+          Compreenda o conceito de vulnerabilidade de software sem termos obscuros:
+        </p>
+      </div>
+
+      <!-- Demonstração Gráfica: Porta Trancada vs Porta com Folga -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 w-full">
+        <!-- Porta Segura -->
+        <div class="p-6 rounded-2xl bg-paper-900 border border-paper-border space-y-4 text-center">
+          <div
+            class="w-16 h-24 mx-auto border-2 border-emerald-500/50 rounded-lg flex items-center justify-center bg-emerald-950/20">
+            <svg class="w-6 h-6 text-emerald-400" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd"
+                d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z"
+                clip-rule="evenodd" />
+            </svg>
+          </div>
+          <h3 class="text-sm font-bold text-slate-200">Porta Segura (Com Patch)</h3>
+          <p class="text-xs text-paper-muted leading-relaxed">
+            O serviço verifica rigorosamente o tamanho e o formato dos pacotes recebidos. Mensagens fora do padrão são
+            rejeitadas.
+          </p>
+        </div>
+
+        <!-- Porta Vulnerável -->
+        <div
+          class="p-6 rounded-2xl bg-paper-900 border-2 border-paper-coral/40 space-y-4 text-center shadow-lg shadow-rose-500/5">
+          <div
+            class="w-16 h-24 mx-auto border-2 border-dashed border-paper-coral rounded-lg flex items-center justify-center bg-rose-950/20">
+            <svg class="w-6 h-6 text-paper-coral animate-pulse" fill="currentColor" viewBox="0 0 20 20">
+              <path
+                d="M10 2a5 5 0 00-5 5v2a2 2 0 00-2 2v5a2 2 0 002 2h10a2 2 0 002-2v-5a2 2 0 00-2-2H7V7a3 3 0 016 0" />
+            </svg>
+          </div>
+          <h3 class="text-sm font-bold text-paper-coral">Porta com Folga (Buffer Overflow)</h3>
+          <p class="text-xs text-paper-muted leading-relaxed">
+            O serviço não limita a entrada: quando recebe dados em excesso, a memória transborda e a chave vira sozinha
+            sem senha.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- --------------------------------------------------------------------
+         CENA 13 — O Comprometimento
+         -------------------------------------------------------------------- -->
+    <section id="scene-12" class="scene-view flex-col items-center justify-center w-full max-w-4xl space-y-8 my-auto">
+      <div class="text-center space-y-2">
+        <span class="text-xs font-mono tracking-widest uppercase text-sky-400 font-semibold">Cena 13 • O
+          Comprometimento</span>
+        <h2 class="font-serif text-3xl md:text-4xl text-slate-100">O Fluxo Lógico da Invasão</h2>
+        <p class="text-paper-muted text-sm max-w-lg mx-auto">
+          Como um punhado de bytes se transforma no controle total da máquina:
+        </p>
+      </div>
+
+      <!-- Diagrama de Fluxo Lógico -->
+      <div class="w-full p-6 rounded-2xl bg-paper-900 border border-paper-border space-y-6">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-3 text-left">
+
+          <div class="p-4 rounded-xl bg-paper-950 border border-paper-border space-y-2">
+            <span class="text-[10px] font-mono text-sky-400 block">Passo 1</span>
+            <h4 class="text-xs font-bold text-slate-200">Envio do Pacote Especial</h4>
+            <p class="text-[11px] text-paper-muted">O worm remete uma mensagem artesanalmente calculada para a porta
+              aberta.</p>
+          </div>
+
+          <div class="p-4 rounded-xl bg-paper-950 border border-paper-border space-y-2">
+            <span class="text-[10px] font-mono text-amber-400 block">Passo 2</span>
+            <h4 class="text-xs font-bold text-slate-200">Estouro do Buffer</h4>
+            <p class="text-[11px] text-paper-muted">A memória do serviço receptor é sobrescrita, desviando o ponteiro de
+              execução.</p>
+          </div>
+
+          <div class="p-4 rounded-xl bg-paper-950 border border-paper-border space-y-2">
+            <span class="text-[10px] font-mono text-paper-coral block">Passo 3</span>
+            <h4 class="text-xs font-bold text-slate-200">Execução do Shellcode</h4>
+            <p class="text-[11px] text-paper-muted">Um minúsculo conjunto de instruções roda com privilégios de sistema
+              e baixa o worm completo.</p>
+          </div>
+
+          <div class="p-4 rounded-xl bg-paper-950 border border-paper-border space-y-2">
+            <span class="text-[10px] font-mono text-emerald-400 block">Passo 4</span>
+            <h4 class="text-xs font-bold text-slate-200">Novo Transmissor</h4>
+            <p class="text-[11px] text-paper-muted">A máquina invadida se torna uma nova emissora de sondas, reiniciando
+              o ciclo.</p>
+          </div>
+        </div>
+
+        <div
+          class="p-3 bg-paper-850/60 rounded-xl border border-paper-border text-xs text-center text-slate-300 font-mono">
+          Sem intervenção de usuário. Sem janelas popup. Apenas tráfego legítimo de rede corrompido em nível binário.
+        </div>
+      </div>
+    </section>
+
+    <!-- --------------------------------------------------------------------
+         CENA 14 — A Cascata de Nós
+         -------------------------------------------------------------------- -->
+    <section id="scene-13" class="scene-view flex-col items-center justify-center w-full max-w-4xl space-y-8 my-auto">
+      <div class="text-center space-y-2">
+        <span class="text-xs font-mono tracking-widest uppercase text-paper-coral font-semibold">Cena 14 • O Efeito
+          Cascata</span>
+        <h2 class="font-serif text-3xl md:text-4xl text-slate-100">A infecta B. A e B infectam C e D.</h2>
+        <p class="text-paper-muted text-sm max-w-lg mx-auto">
+          Veja a multiplicação do esforço de transmissão a cada rodada:
+        </p>
+      </div>
+
+      <div class="w-full max-w-2xl p-6 rounded-2xl bg-paper-900 border border-paper-border space-y-4">
+        <div class="space-y-4 font-mono text-xs text-left">
+          <div class="flex items-center gap-3">
+            <span
+              class="w-8 h-8 rounded-full bg-paper-coral text-white font-bold flex items-center justify-center text-xs">A</span>
+            <div>
+              <span class="text-slate-200 font-semibold block">Minuto 0: Paciente Zero Ativo</span>
+              <span class="text-paper-muted text-[11px]">Varredura: 1 máquina procurando alvos na rede local.</span>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-3 pl-6 border-l-2 border-paper-border">
+            <div class="flex gap-1.5">
+              <span
+                class="w-8 h-8 rounded-full bg-paper-coral text-white font-bold flex items-center justify-center text-xs">A</span>
+              <span
+                class="w-8 h-8 rounded-full bg-paper-coral text-white font-bold flex items-center justify-center text-xs">B</span>
+            </div>
+            <div>
+              <span class="text-slate-200 font-semibold block">Minuto 1: 2 Transmissores em Paralelo</span>
+              <span class="text-paper-muted text-[11px]">O poder de varredura dobrou instantaneamente.</span>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-3 pl-12 border-l-2 border-paper-border">
+            <div class="flex gap-1.5">
+              <span
+                class="w-7 h-7 rounded-full bg-paper-coral text-white flex items-center justify-center text-[10px]">A</span>
+              <span
+                class="w-7 h-7 rounded-full bg-paper-coral text-white flex items-center justify-center text-[10px]">B</span>
+              <span
+                class="w-7 h-7 rounded-full bg-paper-coral text-white flex items-center justify-center text-[10px]">C</span>
+              <span
+                class="w-7 h-7 rounded-full bg-paper-coral text-white flex items-center justify-center text-[10px]">D</span>
+            </div>
+            <div>
+              <span class="text-slate-200 font-semibold block">Minuto 2: 4 Transmissores Ativos</span>
+              <span class="text-paper-muted text-[11px]">A rede começa a sentir os primeiros picos de latência.</span>
+            </div>
+          </div>
+        </div>
+
+        <div
+          class="p-3 bg-paper-950 rounded-xl border border-paper-border text-xs text-amber-300 font-mono text-center">
+          A progressão geométrica transforma poucas centenas de pacotes em uma tempestade devastadora.
+        </div>
+      </div>
+    </section>
+
+    <!-- --------------------------------------------------------------------
+         CENA 15 — A Matemática da Explosão
+         -------------------------------------------------------------------- -->
+    <section id="scene-14" class="scene-view flex-col items-center justify-center w-full max-w-4xl space-y-8 my-auto">
+      <div class="text-center space-y-2">
+        <span class="text-xs font-mono tracking-widest uppercase text-paper-coral font-semibold">Cena 15 • A Matemática
+          da Explosão</span>
+        <h2 class="font-serif text-3xl md:text-4xl text-slate-100">A Equação: $N(t) = N_0 \times r^t$</h2>
+        <p class="text-paper-muted text-sm max-w-lg mx-auto">
+          Por que a escala do contágio foge do controle humano em poucos minutos:
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 w-full items-center">
+        <!-- Explicação Matemática -->
+        <div class="p-6 rounded-2xl bg-paper-900 border border-paper-border space-y-4 text-left">
+          <h3 class="font-mono text-sm text-sky-400 font-bold">O Limiar Exponencial:</h3>
+          <p class="text-xs text-paper-muted leading-relaxed">
+            Se a taxa de reprodução $r$ for maior que 1, a curva dobra de tamanho a cada intervalo de tempo $t$.
+          </p>
+          <div class="space-y-2 font-mono text-xs bg-paper-950 p-4 rounded-xl border border-paper-border">
+            <div class="flex justify-between"><span class="text-slate-400">Minuto 0:</span> <span
+                class="text-slate-200 font-bold">1 nó</span></div>
+            <div class="flex justify-between"><span class="text-slate-400">Minuto 5:</span> <span
+                class="text-slate-200 font-bold">32 nós</span></div>
+            <div class="flex justify-between"><span class="text-slate-400">Minuto 10:</span> <span
+                class="text-amber-400 font-bold">1.024 nós</span></div>
+            <div class="flex justify-between"><span class="text-slate-400">Minuto 15:</span> <span
+                class="text-paper-coral font-bold">32.768 nós!</span></div>
+          </div>
+        </div>
+
+        <!-- Gráfico SVG Logístico -->
+        <div class="p-6 rounded-2xl bg-paper-900 border border-paper-border space-y-3">
+          <span class="text-xs font-mono text-slate-300 font-semibold block">Curva de Saturação (Nós vs Tempo)</span>
+          <div class="w-full h-44 relative">
+            <svg viewBox="0 0 300 140" class="w-full h-full overflow-visible">
+              <line x1="25" y1="10" x2="25" y2="120" stroke="#233254" stroke-width="1.5" />
+              <line x1="25" y1="120" x2="290" y2="120" stroke="#233254" stroke-width="1.5" />
+              <path d="M 25 119 C 100 119, 140 115, 180 60 C 210 20, 240 15, 290 15" fill="none" stroke="#f43f5e"
+                stroke-width="3" />
+              <text x="20" y="20" fill="#7e8ea6" font-family="JetBrains Mono" font-size="8"
+                text-anchor="end">100%</text>
+              <text x="20" y="120" fill="#7e8ea6" font-family="JetBrains Mono" font-size="8" text-anchor="end">0%</text>
+              <text x="285" y="132" fill="#7e8ea6" font-family="JetBrains Mono" font-size="8" text-anchor="end">Tempo
+                (min)</text>
+            </svg>
+          </div>
+          <p class="text-[11px] font-mono text-paper-muted">
+            A fase de explosão ocorre quando há abundância de computadores vulneráveis na mesma sub-rede.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- --------------------------------------------------------------------
+         CENA 16 — Tipos de Impacto
+         -------------------------------------------------------------------- -->
+    <section id="scene-15" class="scene-view flex-col items-center justify-center w-full max-w-4xl space-y-8 my-auto">
+      <div class="text-center space-y-2">
+        <span class="text-xs font-mono tracking-widest uppercase text-sky-400 font-semibold">Cena 16 • O Impacto
+          Real</span>
+        <h2 class="font-serif text-3xl md:text-4xl text-slate-100">O que o Worm faz com os Sistemas?</h2>
+        <p class="text-paper-muted text-sm max-w-lg mx-auto">
+          A auto-replicação é apenas o meio de locomoção. A carga útil (payload) define o dano:
+        </p>
+      </div>
+
+      <!-- 4 Cards de Impacto -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full text-left">
+        <div class="p-5 rounded-2xl bg-paper-900 border border-paper-border space-y-2">
+          <span class="text-xs font-mono text-sky-400 font-bold block">1. Criação de Botnets</span>
+          <h3 class="text-sm font-semibold text-slate-200">Exércitos de Máquinas Zumbis</h3>
+          <p class="text-xs text-paper-muted leading-relaxed">
+            Transforma dispositivos vulneráveis (câmeras, roteadores, PCs) em escravos aguardando ordens de um servidor
+            de comando.
+          </p>
+        </div>
+
+        <div class="p-5 rounded-2xl bg-paper-900 border border-paper-border space-y-2">
+          <span class="text-xs font-mono text-amber-400 font-bold block">2. Ataques de Negação (DDoS)</span>
+          <h3 class="text-sm font-semibold text-slate-200">Saturação em Massa</h3>
+          <p class="text-xs text-paper-muted leading-relaxed">
+            Milhões de máquinas disparam requisições sincronizadas contra um único alvo (bancos, governos), tirando-o do
+            ar.
+          </p>
+        </div>
+
+        <div class="p-5 rounded-2xl bg-paper-900 border border-paper-border space-y-2">
+          <span class="text-xs font-mono text-paper-coral font-bold block">3. Exaustão de Recursos e Banda</span>
+          <h3 class="text-sm font-semibold text-slate-200">Congelamento de Infraestrutura</h3>
+          <p class="text-xs text-paper-muted leading-relaxed">
+            Mesmo sem payload destrutivo, o volume de varreduras enche as tabelas dos roteadores e paralisa operações
+            corporativas.
+          </p>
+        </div>
+
+        <div class="p-5 rounded-2xl bg-paper-900 border border-paper-border space-y-2">
+          <span class="text-xs font-mono text-emerald-400 font-bold block">4. Propagação de Ransomware</span>
+          <h3 class="text-sm font-semibold text-slate-200">Movimento Lateral Destrutivo</h3>
+          <p class="text-xs text-paper-muted leading-relaxed">
+            Como no WannaCry (2017): o worm carrega um módulo de sequestro e criptografa hospitais e portos em questão
+            de minutos.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- --------------------------------------------------------------------
+         CENA 17 — Defesa em Profundidade
+         -------------------------------------------------------------------- -->
+    <section id="scene-16" class="scene-view flex-col items-center justify-center w-full max-w-4xl space-y-8 my-auto">
+      <div class="text-center space-y-2">
+        <span class="text-xs font-mono tracking-widest uppercase text-emerald-400 font-semibold">Cena 17 • A Arquitetura
+          Defensiva</span>
+        <h2 class="font-serif text-3xl md:text-4xl text-slate-100">Defesa em Profundidade</h2>
+        <p class="text-paper-muted text-sm max-w-lg mx-auto">
+          Nenhuma ferramenta sozinha é invulnerável. A segurança real nasce da sobreposição de camadas:
+        </p>
+      </div>
+
+      <!-- Camadas Interativas com Interruptores -->
+      <div class="w-full space-y-3" id="defenseLayersContainer">
+        <!-- 4 camadas com toggle dinâmico -->
+      </div>
+
+      <div
+        class="w-full p-4 rounded-xl bg-paper-900 border border-paper-border text-xs text-slate-300 font-mono text-center">
+        Eficácia Global da Arquitetura: <span id="defenseScoreText" class="text-emerald-400 font-bold">100%
+          Protegido</span>
+      </div>
+    </section>
+
+    <!-- --------------------------------------------------------------------
+         CENA 18 — Síntese Final
+         -------------------------------------------------------------------- -->
+    <section id="scene-17"
+      class="scene-view flex-col items-center justify-center w-full max-w-4xl space-y-8 text-center my-auto">
+      <div class="space-y-3 max-w-2xl">
+        <span class="text-xs font-mono tracking-widest uppercase text-sky-400 font-semibold">Cena 18 • Síntese e
+          Desfecho</span>
+        <h2 class="font-serif text-3xl sm:text-4xl md:text-5xl text-slate-100 font-medium">
+          O Olhar Revelado
+        </h2>
+        <p class="text-paper-muted text-base font-light leading-relaxed">
+          Retorne à Cena 01. Aquela propagação que antes parecia um mistério agora revela sua verdadeira mecânica aos
+          seus olhos:
+        </p>
+      </div>
+
+      <!-- Resumo dos 4 Mecanismos Ocultos Dominados -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 w-full text-left font-mono text-xs">
+        <div class="p-4 rounded-xl bg-paper-900 border border-paper-border space-y-1">
+          <span class="text-sky-400 font-bold block">1. Autonomia</span>
+          <p class="text-paper-muted">Não depende de cliques humanos nem de arquivos hospedeiros.</p>
+        </div>
+        <div class="p-4 rounded-xl bg-paper-900 border border-paper-border space-y-1">
+          <span class="text-amber-400 font-bold block">2. Varredura</span>
+          <p class="text-paper-muted">Localiza ativamente portas abertas e serviços vulneráveis.</p>
+        </div>
+        <div class="p-4 rounded-xl bg-paper-900 border border-paper-border space-y-1">
+          <span class="text-paper-coral font-bold block">3. Matemática</span>
+          <p class="text-paper-muted">Crescimento exponencial $N_0 \times r^t$ satura a rede em minutos.</p>
+        </div>
+        <div class="p-4 rounded-xl bg-paper-900 border border-paper-border space-y-1">
+          <span class="text-emerald-400 font-bold block">4. Contenção</span>
+          <p class="text-paper-muted">Segmentação, portas fechadas e patches anulam o vetor de locomoção.</p>
+        </div>
+      </div>
+
+      <div class="flex flex-wrap items-center justify-center gap-3 pt-4">
+        <button onclick="goToScene(0)"
+          class="px-5 py-2.5 rounded-xl bg-slate-100 hover:bg-white text-paper-950 font-medium text-xs md:text-sm transition-all shadow-lg flex items-center gap-2">
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+          </svg>
+          Rever a Apresentação
+        </button>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ======================================================================
+       RODAPÉ EDITORIAL COM DICA DE NAVEGAÇÃO
+       ====================================================================== -->
+  <footer
+    class="border-t border-paper-border/60 py-3 px-4 text-center text-xs font-mono text-paper-muted flex items-center justify-between max-w-6xl mx-auto w-full">
+    <span>Dica: Use as teclas <kbd
+        class="px-1.5 py-0.5 rounded bg-paper-900 border border-paper-border text-slate-300">←</kbd> e <kbd
+        class="px-1.5 py-0.5 rounded bg-paper-900 border border-paper-border text-slate-300">→</kbd> para navegar
+      livremente</span>
+    <span class="hidden sm:inline">Apresentação Autocontida • Vanilla JS</span>
+  </footer>
+
+  <!-- ======================================================================
+       MOTOR DA APRESENTAÇÃO (VANILLA JAVASCRIPT)
+       ====================================================================== -->
+  <script>
+    // ------------------------------------------------------------------------
+    // Metadados das 18 Cenas para o Sumário e Navegação
+    // ------------------------------------------------------------------------
+    const scenesMeta = [
+      { id: 'scene-0', title: 'Cena 01 • O Incidente', desc: 'A rede começa a mudar silenciosamente' },
+      { id: 'scene-1', title: 'Cena 02 • A Pergunta', desc: 'Como um nó coloca todos em risco?' },
+      { id: 'scene-2', title: 'Cena 03 • O Conceito', desc: 'A equação de autonomia do Worm' },
+      { id: 'scene-3', title: 'Cena 04 • O Diferencial', desc: 'Vírus vs Worm vs Trojan' },
+      { id: 'scene-4', title: 'Cena 05 • Linha do Tempo', desc: 'De laboratório à escala mundial' },
+      { id: 'scene-5', title: 'Cena 06 • Creeper (1971)', desc: 'O pioneiro da auto-replicação na ARPANET' },
+      { id: 'scene-6', title: 'Cena 07 • Reaper (1972)', desc: 'O primeiro caçador de malware' },
+      { id: 'scene-7', title: 'Cena 08 • Morris Worm (1988)', desc: 'Sobrecarga sem apagar arquivos' },
+      { id: 'scene-8', title: 'Cena 09 • Ciclo de Vida', desc: 'As 6 fases contínuas da replicação' },
+      { id: 'scene-9', title: 'Cena 10 • Descoberta e Port Scanning', desc: 'A varredura metodológica de portas' },
+      { id: 'scene-10', title: 'Cena 11 • A Cadeia de Exposição', desc: 'Computador, serviço, comunicação e falha' },
+      { id: 'scene-11', title: 'Cena 12 • A Vulnerabilidade', desc: 'Analogia da porta trancada vs fechadura com folga' },
+      { id: 'scene-12', title: 'Cena 13 • O Comprometimento', desc: 'Fluxo lógico de sucesso da invasão' },
+      { id: 'scene-13', title: 'Cena 14 • O Efeito Cascata', desc: 'A infecta B, que infectam C e D' },
+      { id: 'scene-14', title: 'Cena 15 • A Matemática da Explosão', desc: 'A equação N(t) = N0 * r^t' },
+      { id: 'scene-15', title: 'Cena 16 • Tipos de Impacto', desc: 'Botnets, DDoS, Banda e Ransomware' },
+      { id: 'scene-16', title: 'Cena 17 • Defesa em Profundidade', desc: 'As 4 camadas de proteção' },
+      { id: 'scene-17', title: 'Cena 18 • Síntese Final', desc: 'O olhar revelado' }
+    ];
+
+    let currentSceneIdx = 0;
+
+    // ------------------------------------------------------------------------
+    // Funções de Navegação Fluida (Sem Bloqueio)
+    // ------------------------------------------------------------------------
+    function updateSceneView() {
+      // Oculta todas as cenas e exibe apenas a atual
+      scenesMeta.forEach((meta, idx) => {
+        const el = document.getElementById(meta.id);
+        if (el) {
+          if (idx === currentSceneIdx) {
+            el.classList.add('active');
+          } else {
+            el.classList.remove('active');
+          }
+        }
+      });
+
+      // Atualiza textos do topo
+      const numStr = (currentSceneIdx + 1).toString().padStart(2, '0');
+      const totalStr = scenesMeta.length.toString().padStart(2, '0');
+      document.getElementById('txtSceneIndicator').innerText = `Cena ${numStr} / ${totalStr}`;
+
+      // Atualiza botões
+      document.getElementById('btnPrevScene').disabled = (currentSceneIdx === 0);
+      document.getElementById('btnNextScene').disabled = (currentSceneIdx === scenesMeta.length - 1);
+
+      // Atualiza barra de progresso
+      const pct = Math.round(((currentSceneIdx + 1) / scenesMeta.length) * 100);
+      document.getElementById('topProgressBar').style.width = `${pct}%`;
+
+      // Gatilhos específicos de cada cena ao entrar
+      onSceneEnter(currentSceneIdx);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function nextScene() {
+      if (currentSceneIdx < scenesMeta.length - 1) {
+        currentSceneIdx++;
+        updateSceneView();
+      }
+    }
+
+    function prevScene() {
+      if (currentSceneIdx > 0) {
+        currentSceneIdx--;
+        updateSceneView();
+      }
+    }
+
+    function goToScene(idx) {
+      if (idx >= 0 && idx < scenesMeta.length) {
+        currentSceneIdx = idx;
+        updateSceneView();
+        closeIndexDrawer();
+      }
+    }
+
+    // Navegação via Teclado (Setas Esquerda / Direita e Espaço)
+    window.addEventListener('keydown', (e) => {
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+
+      if (e.key === 'ArrowRight' || e.key === ' ') {
+        e.preventDefault();
+        nextScene();
+      } else if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        prevScene();
+      } else if (e.key === 'Escape') {
+        closeIndexDrawer();
+      }
+    });
+
+    // ------------------------------------------------------------------------
+    // Gaveta de Sumário / Índice
+    // ------------------------------------------------------------------------
+    const indexDrawer = document.getElementById('indexDrawer');
+    const indexList = document.getElementById('indexList');
+
+    function openIndexDrawer() {
+      indexList.innerHTML = scenesMeta.map((meta, idx) => `
+        <button onclick="goToScene(${idx})" class="w-full text-left p-2.5 rounded-lg flex items-center justify-between transition-colors ${idx === currentSceneIdx ? 'bg-sky-500/20 text-sky-300 font-bold border border-sky-400/40' : 'hover:bg-paper-800 text-paper-muted hover:text-slate-200'
+        }">
+          <div class="flex items-center gap-3">
+            <span class="w-5 text-right opacity-60">${(idx + 1).toString().padStart(2, '0')}.</span>
+            <span>${meta.title}</span>
+          </div>
+          <span class="text-[11px] text-slate-500 hidden sm:inline">${meta.desc}</span>
+        </button>
+      `).join('');
+      indexDrawer.classList.remove('hidden');
+      indexDrawer.classList.add('flex');
+    }
+
+    function closeIndexDrawer() {
+      indexDrawer.classList.add('hidden');
+      indexDrawer.classList.remove('flex');
+    }
+
+    document.getElementById('btnOpenIndex').addEventListener('click', openIndexDrawer);
+    document.getElementById('btnCloseIndex').addEventListener('click', closeIndexDrawer);
+    document.getElementById('btnPrevScene').addEventListener('click', prevScene);
+    document.getElementById('btnNextScene').addEventListener('click', nextScene);
+
+    // ------------------------------------------------------------------------
+    // Demonstrações Interativas Específicas
+    // ------------------------------------------------------------------------
+
+    // CENA 01: Propagação de Nós Orgânicos
+    let scene1Timer = null;
+    function initScene1Grid() {
+      const container = document.getElementById('networkGridScene1');
+      if (!container) return;
+      container.innerHTML = '';
+      const totalNodes = 30;
+
+      for (let i = 0; i < totalNodes; i++) {
+        const dot = document.createElement('div');
+        dot.className = 'w-3.5 h-3.5 rounded-full bg-slate-700 transition-colors duration-500';
+        dot.id = `node-s1-${i}`;
+        container.appendChild(dot);
+      }
+
+      runScene1Infection();
+    }
+
+    function runScene1Infection() {
+      if (scene1Timer) clearInterval(scene1Timer);
+      for (let i = 0; i < 30; i++) {
+        const n = document.getElementById(`node-s1-${i}`);
+        if (n) {
+          n.className = 'w-3.5 h-3.5 rounded-full bg-slate-700 transition-colors duration-500';
+        }
+      }
+
+      const patientZero = document.getElementById('node-s1-14');
+      if (patientZero) {
+        patientZero.className = 'w-3.5 h-3.5 rounded-full bg-paper-coral node-pulse shadow-md shadow-rose-500/50';
+      }
+
+      let infectedSet = new Set([14]);
+      scene1Timer = setInterval(() => {
+        if (infectedSet.size >= 26) {
+          clearInterval(scene1Timer);
+          return;
+        }
+        const candidate = Math.floor(Math.random() * 30);
+        if (!infectedSet.has(candidate)) {
+          infectedSet.add(candidate);
+          const el = document.getElementById(`node-s1-${candidate}`);
+          if (el) {
+            el.className = 'w-3.5 h-3.5 rounded-full bg-paper-coral shadow-sm shadow-rose-500/30 transition-all duration-300';
+          }
+        }
+      }, 350);
+    }
+
+    document.getElementById('btnReplayScene1').addEventListener('click', runScene1Infection);
+
+    // CENA 02: Resposta Reflexiva Imediata
+    function revealReflectiveAnswer(btn, text) {
+      const box = btn.parentElement.nextElementSibling;
+      box.innerText = text;
+      box.classList.remove('hidden');
+      btn.classList.add('opacity-50');
+    }
+
+    // CENA 05: Linha do Tempo Histórica
+    const historyData = [
+      {
+        year: "1971",
+        title: "Creeper: O Primeiro Experimento de Mobilidade",
+        body: "Criado por Bob Thomas nos laboratórios da BBN. O Creeper não causava destruição: ele simplesmente transferia sua execução de um computador PDP-10 para outro através da ARPANET, exibindo a famosa mensagem provocativa na tela.",
+        quote: "I'M THE CREEPER: CATCH ME IF YOU CAN!"
+      },
+      {
+        year: "1972",
+        title: "Reaper: O Primeiro Caçador",
+        body: "Desenvolvido por Ray Tomlinson (o criador do e-mail moderno). O Reaper era ele próprio um programa auto-replicante, mas programado com uma missão contrária: viajar pela ARPANET procurando e encerrando instâncias ativas do Creeper.",
+        quote: "O conceito embrionário de software de segurança autônomo."
+      },
+      {
+        year: "1988",
+        title: "Morris Worm: O Choque de Realidade",
+        body: "Robert Tappan Morris liberou o código da Universidade Cornell. Uma falha de lógica fazia o worm se reinstalar mesmo em máquinas já infectadas. Em poucas horas, cerca de 6.000 computadores (10% da Internet de então) pararam por falta de memória e CPU.",
+        quote: "Levou à fundação do CERT e ao primeiro processo criminal por crimes de informática nos EUA."
+      },
+      {
+        year: "2000s+",
+        title: "A Era das Armas Cibernéticas",
+        body: "Worms modernos deixaram de ser travessuras acadêmicas. O SQL Slammer (2003) infectou 75 mil servidores em 10 minutos; o Stuxnet (2010) sabotou centrífugas nucleares iranianas sem tocar a internet; e o WannaCry (2017) congelou hospitais britânicos com ransomware.",
+        quote: "A auto-replicação combinada a payloads geopolíticos e extorsão financeira."
+      }
+    ];
+
+    function setHistoryEra(idx) {
+      const d = historyData[idx];
+      document.getElementById('txtTimelineYear').innerText = d.year;
+      document.getElementById('historyContentBox').innerHTML = `
+        <h4 class="font-serif text-lg text-slate-100">${d.title}</h4>
+        <p class="text-xs text-paper-muted leading-relaxed">${d.body}</p>
+        <div class="p-2.5 rounded bg-paper-900 border border-paper-border text-xs text-sky-300 font-mono italic">
+          “${d.quote}”
+        </div>
+      `;
+
+      document.querySelectorAll('.timeline-tab').forEach((btn, bIdx) => {
+        if (bIdx === idx) {
+          btn.className = "timeline-tab px-3 py-1.5 rounded-lg border border-sky-400 bg-sky-500/20 text-sky-200 text-xs font-mono transition-all";
+        } else {
+          btn.className = "timeline-tab px-3 py-1.5 rounded-lg border border-paper-border hover:border-slate-500 text-paper-muted text-xs font-mono transition-all";
+        }
+      });
+    }
+
+    // CENA 06: Salto do Creeper
+    function runCreeperJumpDemo() {
+      const a = document.getElementById('nodeCreeperA');
+      const b = document.getElementById('nodeCreeperB');
+      const c = document.getElementById('nodeCreeperC');
+
+      a.querySelector('.status-badge').className = "status-badge text-xs font-mono text-slate-400";
+      a.querySelector('.status-badge').innerText = "Liberado";
+
+      b.querySelector('.status-badge').className = "status-badge text-xs font-mono text-paper-coral font-bold animate-pulse";
+      b.querySelector('.status-badge').innerText = "Creeper Ativo!";
+
+      setTimeout(() => {
+        b.querySelector('.status-badge').className = "status-badge text-xs font-mono text-slate-400";
+        b.querySelector('.status-badge').innerText = "Liberado";
+
+        c.querySelector('.status-badge').className = "status-badge text-xs font-mono text-paper-coral font-bold animate-pulse";
+        c.querySelector('.status-badge').innerText = "Creeper Saltou para C!";
+      }, 1500);
+    }
+
+    // CENA 08: Morris Worm Resposta
+    function revealMorrisAnswer(btn, isCorrect) {
+      const box = document.getElementById('morrisAnswerBox');
+      box.classList.remove('hidden');
+      if (isCorrect) {
+        box.innerHTML = `
+          <strong class="text-emerald-400 font-mono block mb-1">Exato!</strong>
+          O Morris Worm não continha uma única linha de código para apagar dados. O desastre foi puramente quantitativo: o processo duplicava-se repetidas vezes no mesmo servidor até a tabela de processos esgotar a memória RAM e a CPU atingir 100%, congelando o sistema operacional.
+        `;
+      } else {
+        box.innerHTML = `
+          <strong class="text-paper-coral font-mono block mb-1">Mito clássico!</strong>
+          O Morris Worm não apagava arquivos. Ele foi concebido sem intenção destrutiva. O dano foi decorrente da auto-replicação cega que esgotou os recursos da máquina hospedeira.
+        `;
+      }
+    }
+
+    // CENA 09: Ciclo de Vida
+    const lifecycleStepsData = [
+      { num: 1, title: "1. Descoberta (Scan)", desc: "O worm gera endereços IP aleatórios ou varre a própria sub-rede local enviando pacotes exploratórios para portas conhecidas." },
+      { num: 2, title: "2. Identificação", desc: "Verifica qual versão do sistema ou serviço está respondendo e se ela possui a falha conhecida." },
+      { num: 3, title: "3. Comprometimento", desc: "Dispara o exploit sob medida (como buffer overflow) que corrompe o fluxo de instruções da CPU do alvo." },
+      { num: 4, title: "4. Execução", desc: "O shellcode injetado assume privilégios de administrador e efetua o download do corpo principal do worm." },
+      { num: 5, title: "5. Instalação & Persistência", desc: "Registra-se na inicialização da máquina, encerra ferramentas de diagnóstico e reserva recursos." },
+      { num: 6, title: "6. Propagação Ativa", desc: "A máquina recém-infectada se transforma em um novo polo emissor de varreduras, reiniciando o ciclo para novos nós." }
+    ];
+
+    function initLifecycleDiagram() {
+      const container = document.getElementById('lifecycleStepsContainer');
+      if (!container) return;
+      container.innerHTML = lifecycleStepsData.map((step, idx) => `
+        <button onclick="selectLifecycleStep(${idx})" class="lifecycle-btn p-3 rounded-xl bg-paper-950 border border-paper-border hover:border-sky-400 text-left transition-all group ${idx === 0 ? 'border-sky-400 bg-sky-950/30' : ''}">
+          <span class="text-[10px] font-mono text-sky-400 font-bold block mb-1">FASE 0${step.num}</span>
+          <span class="text-xs font-medium text-slate-200 block truncate">${step.title.split('. ')[1]}</span>
+        </button>
+      `).join('');
+    }
+
+    function selectLifecycleStep(idx) {
+      const step = lifecycleStepsData[idx];
+      document.getElementById('lifecycleDetailStep').innerText = `Etapa ${step.num} de 6`;
+      document.getElementById('lifecycleDetailTitle').innerText = step.title;
+      document.getElementById('lifecycleDetailDesc').innerText = step.desc;
+
+      document.querySelectorAll('.lifecycle-btn').forEach((btn, bIdx) => {
+        if (bIdx === idx) {
+          btn.className = "lifecycle-btn p-3 rounded-xl border border-sky-400 bg-sky-950/40 text-left transition-all";
+        } else {
+          btn.className = "lifecycle-btn p-3 rounded-xl bg-paper-950 border border-paper-border hover:border-sky-400/50 text-left transition-all";
+        }
+      });
+    }
+
+    // CENA 10: Port Scanning Demo
+    const portsToScan = [
+      { port: 22, name: "SSH (Acesso Remoto)", status: "Fechada / Rejeitada", safe: true },
+      { port: 80, name: "HTTP (Web Local)", status: "Aberta (Sem Falha Crítica)", safe: true },
+      { port: 445, name: "SMB (Compartilhamento de Arquivos)", status: "VULNERÁVEL (Exploit MS17-010)", safe: false },
+      { port: 3389, name: "RDP (Área de Trabalho Remota)", status: "Fechada", safe: true }
+    ];
+
+    function runPortScanDemo() {
+      const resContainer = document.getElementById('portScanResults');
+      if (!resContainer) return;
+      resContainer.innerHTML = '<div class="text-sky-300 animate-pulse">Disparando pacotes TCP SYN para 192.168.1.45...</div>';
+
+      setTimeout(() => {
+        resContainer.innerHTML = portsToScan.map(p => `
+          <div class="flex items-center justify-between p-2 rounded bg-paper-950 border border-paper-border ${!p.safe ? 'border-paper-coral/60 bg-rose-950/20' : ''}">
+            <div class="flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full ${p.safe ? 'bg-slate-500' : 'bg-paper-coral animate-ping'}"></span>
+              <span class="font-bold text-slate-200">Porta ${p.port}</span>
+              <span class="text-paper-muted">(${p.name})</span>
+            </div>
+            <span class="${p.safe ? 'text-slate-400' : 'text-paper-coral font-bold'}">${p.status}</span>
+          </div>
+        `).join('');
+      }, 600);
+    }
+
+    const btnScan = document.getElementById('btnScanPorts');
+    if (btnScan) btnScan.addEventListener('click', runPortScanDemo);
+
+    // CENA 17: Defesa em Profundidade com Interruptores
+    const defenseLayers = [
+      { id: 'def-1', name: "1. Segmentação Interna de Rede (VLANs)", desc: "Isola os departamentos. Se uma máquina em Vendas for comprometida, o worm é impedido de alcançar o Datacenter e o Financeiro.", active: true },
+      { id: 'def-2', name: "2. Gestão Contínua de Patches", desc: "Aplica correções dos fabricantes fechando a brecha no serviço antes que o exploit chegue pela rede.", active: true },
+      { id: 'def-3', name: "3. Firewall e Fechamento de Portas Sensíveis", desc: "Bloqueia a comunicação das portas 445 e 135 entre computadores comuns, cortando a varredura lateral.", active: true },
+      { id: 'def-4', name: "4. Monitoramento e Detecção de Anomalias (IPS/NTA)", desc: "Detecta picos repentinos de pacotes SYN de um único nó e coloca-o imediatamente em quarentena.", active: true }
+    ];
+
+    function initDefenseLayers() {
+      const container = document.getElementById('defenseLayersContainer');
+      if (!container) return;
+      container.innerHTML = defenseLayers.map((layer, idx) => `
+        <div class="p-4 rounded-xl bg-paper-900 border border-paper-border flex flex-col sm:flex-row sm:items-center justify-between gap-3" id="layerBox-${idx}">
+          <div class="space-y-1 text-left">
+            <h4 class="text-xs font-bold text-slate-200 font-mono">${layer.name}</h4>
+            <p class="text-[11px] text-paper-muted leading-relaxed">${layer.desc}</p>
+          </div>
+          <button onclick="toggleDefenseLayer(${idx})" class="toggle-def-btn px-3 py-1.5 rounded-lg font-mono text-xs font-semibold transition-all flex items-center gap-1.5 self-start sm:self-auto bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">
+            <span class="w-2 h-2 rounded-full bg-emerald-400"></span> Ativa
+          </button>
+        </div>
+      `).join('');
+    }
+
+    function toggleDefenseLayer(idx) {
+      defenseLayers[idx].active = !defenseLayers[idx].active;
+      const box = document.getElementById(`layerBox-${idx}`);
+      const btn = box.querySelector('.toggle-def-btn');
+
+      if (defenseLayers[idx].active) {
+        btn.className = "toggle-def-btn px-3 py-1.5 rounded-lg font-mono text-xs font-semibold transition-all flex items-center gap-1.5 self-start sm:self-auto bg-emerald-500/20 text-emerald-300 border border-emerald-500/40";
+        btn.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-400"></span> Ativa`;
+        box.classList.remove('opacity-60', 'border-paper-coral/30');
+      } else {
+        btn.className = "toggle-def-btn px-3 py-1.5 rounded-lg font-mono text-xs font-semibold transition-all flex items-center gap-1.5 self-start sm:self-auto bg-paper-800 text-paper-muted border border-paper-border";
+        btn.innerHTML = `<span class="w-2 h-2 rounded-full bg-slate-500"></span> Desativada`;
+        box.classList.add('opacity-60', 'border-paper-coral/30');
+      }
+
+      const activeCount = defenseLayers.filter(l => l.active).length;
+      const scoreTxt = document.getElementById('defenseScoreText');
+      if (activeCount === 4) {
+        scoreTxt.className = "text-emerald-400 font-bold";
+        scoreTxt.innerText = "100% Protegido (Defesa em Profundidade Total)";
+      } else if (activeCount >= 2) {
+        scoreTxt.className = "text-amber-400 font-bold";
+        scoreTxt.innerText = `${activeCount * 25}% Protegido (Vulnerabilidade a Movimento Lateral)`;
+      } else {
+        scoreTxt.className = "text-paper-coral font-bold animate-pulse";
+        scoreTxt.innerText = `${activeCount * 25}% Crítico (Risco Extremo de Propagação Imediata)`;
+      }
+    }
+
+    // ------------------------------------------------------------------------
+    // Gatilhos de Inicialização por Cena
+    // ------------------------------------------------------------------------
+    function onSceneEnter(idx) {
+      if (idx === 0) {
+        initScene1Grid();
+      } else if (idx === 4) {
+        setHistoryEra(0);
+      } else if (idx === 8) {
+        initLifecycleDiagram();
+      } else if (idx === 9) {
+        runPortScanDemo();
+      } else if (idx === 16) {
+        initDefenseLayers();
+      }
+    }
+
+    // Inicialização ao carregar o DOM
+    window.addEventListener('DOMContentLoaded', () => {
+      updateSceneView();
+      initScene1Grid();
+    });
+  </script>
+</body>
+
+</html>
