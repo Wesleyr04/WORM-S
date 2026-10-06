@@ -78,12 +78,10 @@
 
     /* Micro-animação para nós de rede */
     @keyframes pulseNode {
-
       0%,
       100% {
         transform: scale(1);
       }
-
       50% {
         transform: scale(1.15);
       }
@@ -112,16 +110,339 @@
     ::-webkit-scrollbar-thumb:hover {
       background: #38bdf8;
     }
+
+    /* ======================================================================
+       SISTEMA DE AMBIÊNCIA, REDE PERSISTENTE E CARDS VIVOS
+       ====================================================================== */
+    /* Backing ambient blobs */
+    .ambient-light-blob {
+      position: absolute;
+      border-radius: 9999px;
+      filter: blur(80px);
+      pointer-events: none;
+      transition: opacity 1.8s ease, transform 3s ease;
+      will-change: transform, opacity;
+    }
+
+    .ambient-blob-cyan {
+      width: 550px;
+      height: 550px;
+      top: -80px;
+      left: 8%;
+      background: radial-gradient(circle, rgba(56, 189, 248, 0.08) 0%, rgba(56, 189, 248, 0) 70%);
+      animation: driftBlob1 26s infinite alternate ease-in-out;
+    }
+
+    .ambient-blob-coral {
+      width: 620px;
+      height: 620px;
+      bottom: -120px;
+      right: 5%;
+      background: radial-gradient(circle, rgba(244, 63, 94, 0.07) 0%, rgba(244, 63, 94, 0) 70%);
+      opacity: 0.25;
+      animation: driftBlob2 30s infinite alternate ease-in-out;
+    }
+
+    .ambient-blob-emerald {
+      width: 520px;
+      height: 520px;
+      top: 35%;
+      right: 20%;
+      background: radial-gradient(circle, rgba(16, 185, 129, 0.08) 0%, rgba(16, 185, 129, 0) 70%);
+      opacity: 0;
+      animation: driftBlob3 24s infinite alternate ease-in-out;
+    }
+
+    @keyframes driftBlob1 {
+      0% { transform: translate(0, 0) scale(1); }
+      100% { transform: translate(80px, 60px) scale(1.1); }
+    }
+
+    @keyframes driftBlob2 {
+      0% { transform: translate(0, 0) scale(1); }
+      100% { transform: translate(-70px, -50px) scale(1.15); }
+    }
+
+    @keyframes driftBlob3 {
+      0% { transform: translate(0, 0) scale(0.9); }
+      100% { transform: translate(50px, -40px) scale(1.08); }
+    }
+
+    /* Linha de Varredura Sutil (Sonar Audit) */
+    .ambient-scanline {
+      position: absolute;
+      top: 0;
+      left: -60%;
+      width: 45%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent 0%, rgba(56, 189, 248, 0.015) 60%, rgba(56, 189, 248, 0.05) 98%, transparent 100%);
+      pointer-events: none;
+      animation: scanlineSweep 18s infinite ease-in-out;
+    }
+
+    @keyframes scanlineSweep {
+      0% { transform: translateX(0); opacity: 0; }
+      5% { opacity: 1; }
+      55% { transform: translateX(380vw); opacity: 1; }
+      60% { opacity: 0; }
+      100% { transform: translateX(380vw); opacity: 0; }
+    }
+
+    /* Grão de Ruído Sutil e Vinheta */
+    .ambient-noise-overlay {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at center, transparent 40%, rgba(9, 13, 22, 0.6) 100%);
+      pointer-events: none;
+    }
+
+    /* ======================================================================
+       ANIMAÇÕES AUTÔNOMAS E DESINCRONIZADAS DE CARDS
+       ====================================================================== */
+    @keyframes floatCard1 {
+      0% { transform: translateY(0); }
+      100% { transform: translateY(-4px); }
+    }
+    @keyframes floatCard2 {
+      0% { transform: translateY(0); }
+      100% { transform: translateY(-5.5px); }
+    }
+    @keyframes floatCard3 {
+      0% { transform: translateY(0); }
+      100% { transform: translateY(-3.5px); }
+    }
+    @keyframes floatCard4 {
+      0% { transform: translateY(0); }
+      100% { transform: translateY(-4.8px); }
+    }
+
+    .card-float-1 {
+      animation: floatCard1 5.6s ease-in-out infinite alternate;
+      transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s ease, border-color 0.35s ease;
+    }
+    .card-float-2 {
+      animation: floatCard2 7.1s ease-in-out infinite alternate;
+      animation-delay: 0.9s;
+      transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s ease, border-color 0.35s ease;
+    }
+    .card-float-3 {
+      animation: floatCard3 4.9s ease-in-out infinite alternate;
+      animation-delay: 1.8s;
+      transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s ease, border-color 0.35s ease;
+    }
+    .card-float-4 {
+      animation: floatCard4 6.4s ease-in-out infinite alternate;
+      animation-delay: 2.7s;
+      transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s ease, border-color 0.35s ease;
+    }
+
+    .card-float-1:hover, .card-float-2:hover, .card-float-3:hover, .card-float-4:hover {
+      transform: translateY(-7px) scale(1.008) !important;
+      box-shadow: 0 16px 36px -10px rgba(0, 0, 0, 0.6) !important;
+    }
+
+    /* Brilho Respiratório Semântico em Bordas */
+    @keyframes glowBreatheCyan {
+      0%, 100% { border-color: rgba(56, 189, 248, 0.25); box-shadow: 0 0 16px -3px rgba(56, 189, 248, 0.04); }
+      50% { border-color: rgba(56, 189, 248, 0.45); box-shadow: 0 0 24px -2px rgba(56, 189, 248, 0.12); }
+    }
+    @keyframes glowBreatheCoral {
+      0%, 100% { border-color: rgba(244, 63, 94, 0.25); box-shadow: 0 0 16px -3px rgba(244, 63, 94, 0.04); }
+      50% { border-color: rgba(244, 63, 94, 0.5); box-shadow: 0 0 26px -2px rgba(244, 63, 94, 0.14); }
+    }
+    @keyframes glowBreatheAmber {
+      0%, 100% { border-color: rgba(251, 191, 36, 0.25); box-shadow: 0 0 16px -3px rgba(251, 191, 36, 0.04); }
+      50% { border-color: rgba(251, 191, 36, 0.45); box-shadow: 0 0 22px -2px rgba(251, 191, 36, 0.12); }
+    }
+    @keyframes glowBreatheEmerald {
+      0%, 100% { border-color: rgba(16, 185, 129, 0.25); box-shadow: 0 0 16px -3px rgba(16, 185, 129, 0.04); }
+      50% { border-color: rgba(16, 185, 129, 0.5); box-shadow: 0 0 24px -2px rgba(16, 185, 129, 0.14); }
+    }
+
+    .glow-cyan { animation: glowBreatheCyan 5.4s ease-in-out infinite; }
+    .glow-coral { animation: glowBreatheCoral 6.2s ease-in-out infinite; }
+    .glow-amber { animation: glowBreatheAmber 5.8s ease-in-out infinite; }
+    .glow-emerald { animation: glowBreatheEmerald 6.5s ease-in-out infinite; }
+
+    /* Detalhes Tecnológicos nos Cantos (Micro-HUD Editorial) */
+    .tech-corner-card {
+      position: relative;
+    }
+    .tech-corner-card::before, .tech-corner-card::after {
+      content: '';
+      position: absolute;
+      width: 7px;
+      height: 7px;
+      pointer-events: none;
+      transition: all 0.3s ease;
+    }
+    .tech-corner-card::before {
+      top: -1px;
+      left: -1px;
+      border-top: 2px solid rgba(56, 189, 248, 0.4);
+      border-left: 2px solid rgba(56, 189, 248, 0.4);
+      border-top-left-radius: 3px;
+    }
+    .tech-corner-card::after {
+      bottom: -1px;
+      right: -1px;
+      border-bottom: 2px solid rgba(56, 189, 248, 0.4);
+      border-right: 2px solid rgba(56, 189, 248, 0.4);
+      border-bottom-right-radius: 3px;
+    }
+
+    /* Trilho de Transmissão de Pacotes (Cena 10) */
+    .packet-rail {
+      position: relative;
+      height: 28px;
+      background: rgba(14, 20, 36, 0.8);
+      border: 1px dashed rgba(35, 50, 84, 0.9);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .packet-runner {
+      position: absolute;
+      top: 5px;
+      height: 18px;
+      border-radius: 4px;
+      font-size: 10px;
+      font-family: 'JetBrains Mono', monospace;
+      padding: 0 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: left 0.45s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.3s ease;
+      white-space: nowrap;
+    }
+
+    /* ======================================================================
+       HUD DE NAVEGAÇÃO DA APRESENTAÇÃO (SLIDE DOCK) & SINAIS DE INTERAÇÃO
+       ====================================================================== */
+    #presentationDock {
+      box-shadow: 0 20px 45px -10px rgba(0, 0, 0, 0.8), 0 0 20px -3px rgba(56, 189, 248, 0.08);
+      animation: dockEntry 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    @keyframes dockEntry {
+      0% { opacity: 0; transform: translate(-50%, 16px); }
+      100% { opacity: 1; transform: translate(-50%, 0); }
+    }
+
+    #presentationDock button:not(:disabled):hover {
+      box-shadow: 0 0 16px -2px rgba(56, 189, 248, 0.25);
+    }
+
+    #presentationDock button:disabled {
+      cursor: not-allowed;
+      opacity: 0.22;
+    }
+
+    /* Distinção Visual Nítida: Controles de Simulação Interna vs Avanço de Slide */
+    .sim-content-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 10px;
+      font-family: 'JetBrains Mono', monospace;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      padding: 3px 7px;
+      border-radius: 6px;
+      background: rgba(56, 189, 248, 0.08);
+      border: 1px dashed rgba(56, 189, 248, 0.35);
+      color: #7dd3fc;
+    }
+
+    .sim-control-btn {
+      position: relative;
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .sim-control-btn:active {
+      transform: scale(0.97);
+    }
+
+    /* ======================================================================
+       CENA 18: CARD E TRANSIÇÃO POLIDA DO MEME FINAL
+       ====================================================================== */
+    .meme-card {
+      opacity: 0;
+      transform: scale(0.96);
+      transition: opacity 0.45s cubic-bezier(0.16, 1, 0.3, 1), transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .scene-view.active .meme-card {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    .meme-img {
+      max-height: 52vh;
+      width: auto;
+      max-width: 100%;
+      object-fit: contain;
+      box-shadow: 0 16px 36px -8px rgba(0, 0, 0, 0.7);
+    }
+
+    @media (min-height: 800px) {
+      .meme-img {
+        max-height: 60vh;
+      }
+    }
+
+    /* Acessibilidade: prefers-reduced-motion */
+    @media (prefers-reduced-motion: reduce) {
+      .card-float-1, .card-float-2, .card-float-3, .card-float-4,
+      .ambient-scanline, .ambient-blob-cyan, .ambient-blob-coral, .ambient-blob-emerald,
+      .glow-cyan, .glow-coral, .glow-amber, .glow-emerald, .node-pulse {
+        animation: none !important;
+        transform: none !important;
+      }
+      .scene-view {
+        transform: none !important;
+        transition: opacity 0.1s ease !important;
+      }
+      .meme-card {
+        transform: none !important;
+        transition: opacity 0.15s ease !important;
+      }
+      #presentationDock {
+        animation: none !important;
+      }
+      #navigationAutoHint {
+        animation: none !important;
+      }
+    }
   </style>
 </head>
 
 <body class="h-full flex flex-col antialiased selection:bg-sky-500/30 selection:text-sky-200">
 
   <!-- ======================================================================
+       SISTEMA AMBIENTAL PERSISTENTE (BACKGROUND NETWORK & AMBIENT LIGHT)
+       ====================================================================== -->
+  <div id="ambientBackdrop" class="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+    <!-- Luzes Ambientes Difusas e Lentas -->
+    <div id="ambientBlob1" class="ambient-light-blob ambient-blob-cyan"></div>
+    <div id="ambientBlob2" class="ambient-light-blob ambient-blob-coral"></div>
+    <div id="ambientBlob3" class="ambient-light-blob ambient-blob-emerald"></div>
+
+    <!-- Canvas de Rede Persistente -->
+    <canvas id="networkCanvas" class="w-full h-full block"></canvas>
+
+    <!-- Linha de Varredura Sutil (Sonar / Scanline) -->
+    <div id="ambientScanline" class="ambient-scanline"></div>
+
+    <!-- Grão de Ruído Sutil / Textura Digital -->
+    <div class="ambient-noise-overlay"></div>
+  </div>
+
+  <!-- ======================================================================
        BARRA DE CONTROLE EDITORIAL SUPERIOR
        ====================================================================== -->
   <header
-    class="border-b border-paper-border/80 bg-paper-950/90 backdrop-blur-md sticky top-0 z-50 px-4 md:px-8 py-3.5">
+    class="border-b border-paper-border/80 bg-paper-950/90 backdrop-blur-md sticky top-0 z-50 px-4 md:px-8 py-3">
     <div class="max-w-6xl mx-auto flex items-center justify-between gap-4">
 
       <!-- Identificação Editorial -->
@@ -169,6 +490,26 @@
       </div>
     </div>
 
+    <!-- Faixa de Telemetria Ambiental da Rede (Digital Atmosphere) -->
+    <div id="telemetryBar"
+      class="max-w-6xl mx-auto border-t border-paper-border/40 mt-2.5 pt-1.5 flex flex-wrap items-center justify-between text-[11px] font-mono text-paper-muted gap-2">
+      <div class="flex items-center gap-3">
+        <span class="flex items-center gap-1.5">
+          <span id="telemetryStatusDot" class="w-2 h-2 rounded-full bg-sky-400 animate-pulse"></span>
+          <span id="telemetryStatusText" class="text-slate-300 font-medium">ESTADO: NOMINAL</span>
+        </span>
+        <span class="text-slate-600 hidden sm:inline">|</span>
+        <span class="hidden sm:inline">TOPOLOGIA: <span class="text-slate-300">52 NÓS ATIVOS</span></span>
+        <span class="text-slate-600">|</span>
+        <span>LATÊNCIA: <span id="telemetryLatency" class="text-sky-300 font-semibold">12ms</span></span>
+      </div>
+      <div class="flex items-center gap-3">
+        <span>ATIVIDADE DE CONTÁGIO: <span id="telemetryInfectionIndex" class="text-sky-400 font-bold">12%</span></span>
+        <span class="text-slate-600 hidden md:inline">|</span>
+        <span id="telemetryDefStatus" class="text-slate-400 hidden md:inline text-[10px]">MONITORAMENTO GLOBAL</span>
+      </div>
+    </div>
+
     <!-- Barra de Progresso Fluida no Rodapé do Header -->
     <div class="w-full bg-paper-900 h-[2px] absolute bottom-0 left-0">
       <div id="topProgressBar"
@@ -205,7 +546,7 @@
   <!-- ======================================================================
        PALCO PRINCIPAL: AS 18 CENAS DA NARRATIVA
        ====================================================================== -->
-  <main class="flex-1 flex flex-col justify-center items-center p-4 md:p-8 max-w-5xl mx-auto w-full">
+  <main class="flex-1 flex flex-col justify-center items-center p-4 md:p-8 pb-28 md:pb-36 max-w-5xl mx-auto w-full relative z-10">
 
     <!-- --------------------------------------------------------------------
          CENA 01 — O Incidente
@@ -226,15 +567,15 @@
 
       <!-- Demonstração Visual: Grafo de Rede Orgânico -->
       <div
-        class="w-full max-w-xl p-6 rounded-2xl bg-paper-900 border border-paper-border relative overflow-hidden shadow-2xl">
+        class="w-full max-w-xl p-6 rounded-2xl bg-paper-900/85 backdrop-blur-md border border-paper-border relative overflow-hidden shadow-2xl card-float-1 glow-coral tech-corner-card">
         <div class="flex items-center justify-between mb-4 text-xs font-mono text-paper-muted">
           <span>Topologia Local: 30 Nós</span>
-          <button id="btnReplayScene1" class="text-sky-400 hover:text-sky-300 flex items-center gap-1">
+          <button id="btnReplayScene1" class="sim-control-btn text-sky-400 hover:text-sky-300 flex items-center gap-1.5 font-mono text-[11px] px-2.5 py-1 rounded bg-sky-950/60 border border-sky-400/30 hover:border-sky-400/60 transition-all" title="Simular contágio novamente nesta cena">
             <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                 d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
             </svg>
-            Repetir Propagação
+            Simular Novamente
           </button>
         </div>
         <div id="networkGridScene1" class="grid grid-cols-6 sm:grid-cols-10 gap-3 py-4 place-items-center">
@@ -262,7 +603,7 @@
     <section id="scene-1"
       class="scene-view flex-col items-center justify-center w-full max-w-3xl space-y-8 text-center my-auto">
       <span class="text-xs font-mono tracking-widest uppercase text-sky-400 font-semibold">Cena 02 • A Pergunta
-        Central</span>
+          Central</span>
 
       <blockquote
         class="font-serif text-3xl sm:text-4xl md:text-5xl font-normal text-slate-100 leading-tight max-w-2xl">
@@ -275,7 +616,7 @@
       </p>
 
       <!-- Pequena reflexão sem bloqueio -->
-      <div class="w-full max-w-lg p-5 rounded-2xl bg-paper-900/60 border border-paper-border text-left space-y-3">
+      <div class="w-full max-w-lg p-5 rounded-2xl bg-paper-900/80 backdrop-blur-md border border-paper-border text-left space-y-3 card-float-2 glow-amber tech-corner-card">
         <span class="text-xs font-mono text-amber-400 font-semibold uppercase tracking-wider block">Pausa
           Reflexiva</span>
         <p class="text-xs text-slate-300">
@@ -310,7 +651,7 @@
       <div class="grid grid-cols-1 md:grid-cols-4 gap-3 w-full items-center">
 
         <div
-          class="p-5 rounded-2xl bg-paper-900 border border-paper-border text-center space-y-2 hover:border-sky-400/40 transition-colors">
+          class="p-5 rounded-2xl bg-paper-900/85 backdrop-blur-md border border-paper-border text-center space-y-2 card-float-1 glow-cyan tech-corner-card transition-all">
           <div
             class="w-10 h-10 rounded-xl bg-sky-500/10 text-sky-400 mx-auto flex items-center justify-center font-mono font-bold">
             1</div>
@@ -321,7 +662,7 @@
         </div>
 
         <div
-          class="p-5 rounded-2xl bg-paper-900 border border-paper-border text-center space-y-2 hover:border-sky-400/40 transition-colors">
+          class="p-5 rounded-2xl bg-paper-900/85 backdrop-blur-md border border-paper-border text-center space-y-2 card-float-2 glow-amber tech-corner-card transition-all">
           <div
             class="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-400 mx-auto flex items-center justify-center font-mono font-bold">
             2</div>
@@ -332,7 +673,7 @@
         </div>
 
         <div
-          class="p-5 rounded-2xl bg-paper-900 border border-paper-border text-center space-y-2 hover:border-sky-400/40 transition-colors">
+          class="p-5 rounded-2xl bg-paper-900/85 backdrop-blur-md border border-paper-border text-center space-y-2 card-float-3 glow-coral tech-corner-card transition-all">
           <div
             class="w-10 h-10 rounded-xl bg-paper-coral/10 text-paper-coral mx-auto flex items-center justify-center font-mono font-bold">
             3</div>
@@ -343,7 +684,7 @@
         </div>
 
         <div
-          class="p-5 rounded-2xl bg-gradient-to-br from-paper-coral/20 to-sky-500/20 border border-paper-coral/40 text-center space-y-2 shadow-xl">
+          class="p-5 rounded-2xl bg-gradient-to-br from-paper-coral/20 to-sky-500/20 backdrop-blur-md border border-paper-coral/40 text-center space-y-2 shadow-xl card-float-4 glow-coral tech-corner-card transition-all">
           <span class="text-[10px] font-mono uppercase tracking-wider text-paper-coral font-bold block">Resultado</span>
           <h3 class="font-serif text-2xl text-white font-medium">WORM</h3>
           <p class="text-xs text-slate-300">
@@ -353,7 +694,7 @@
       </div>
 
       <div
-        class="p-4 rounded-xl bg-paper-900/60 border border-paper-border text-xs text-slate-300 font-mono text-center max-w-xl">
+        class="p-4 rounded-xl bg-paper-900/70 backdrop-blur-md border border-paper-border text-xs text-slate-300 font-mono text-center max-w-xl">
         Definição: <span class="text-sky-300">Programa</span> + <span class="text-amber-300">Replicação</span> + <span
           class="text-rose-300">Propagação Autônoma</span> = <strong class="text-white">Worm de Rede</strong>.
       </div>
@@ -377,7 +718,7 @@
 
         <!-- Vírus -->
         <div
-          class="p-6 rounded-2xl bg-paper-900 border border-paper-border flex flex-col justify-between space-y-4 hover:border-slate-600 transition-colors">
+          class="p-6 rounded-2xl bg-paper-900/85 backdrop-blur-md border border-paper-border flex flex-col justify-between space-y-4 card-float-1 glow-amber tech-corner-card transition-all">
           <div class="space-y-2">
             <span class="text-xs font-mono text-amber-400 font-semibold uppercase">O Parasita</span>
             <h3 class="font-serif text-xl text-slate-100">Vírus</h3>
@@ -394,7 +735,7 @@
 
         <!-- Worm -->
         <div
-          class="p-6 rounded-2xl bg-paper-900 border-2 border-sky-400/50 flex flex-col justify-between space-y-4 shadow-xl shadow-sky-500/5">
+          class="p-6 rounded-2xl bg-paper-900/85 backdrop-blur-md border-2 border-sky-400/50 flex flex-col justify-between space-y-4 shadow-xl shadow-sky-500/5 card-float-2 glow-cyan tech-corner-card transition-all">
           <div class="space-y-2">
             <span class="text-xs font-mono text-sky-400 font-semibold uppercase">O Viajante Autônomo</span>
             <h3 class="font-serif text-xl text-slate-100">Worm</h3>
@@ -411,7 +752,7 @@
 
         <!-- Trojan -->
         <div
-          class="p-6 rounded-2xl bg-paper-900 border border-paper-border flex flex-col justify-between space-y-4 hover:border-slate-600 transition-colors">
+          class="p-6 rounded-2xl bg-paper-900/85 backdrop-blur-md border border-paper-border flex flex-col justify-between space-y-4 card-float-3 glow-coral tech-corner-card transition-all">
           <div class="space-y-2">
             <span class="text-xs font-mono text-paper-coral font-semibold uppercase">O Disfarce</span>
             <h3 class="font-serif text-xl text-slate-100">Trojan</h3>
@@ -442,9 +783,9 @@
       </div>
 
       <!-- Slider Horizontal Interativo -->
-      <div class="w-full p-6 rounded-2xl bg-paper-900 border border-paper-border space-y-6">
+      <div class="w-full p-6 rounded-2xl bg-paper-900/85 backdrop-blur-md border border-paper-border space-y-6 card-float-1 glow-cyan tech-corner-card">
         <div
-          class="flex items-center justify-between text-xs font-mono text-paper-muted border-b border-paper-border pb-3">
+          class="flex items-center justify-between text-xs font-mono text-paper-muted border-b border-paper-border/60 pb-3">
           <span>Selecione o Marco Histórico:</span>
           <span id="txtTimelineYear" class="text-sky-400 font-bold text-sm">1971</span>
         </div>
@@ -464,7 +805,7 @@
             • Era Moderna</button>
         </div>
 
-        <div id="historyContentBox" class="p-6 rounded-xl bg-paper-950 border border-paper-border space-y-3 text-left">
+        <div id="historyContentBox" class="p-6 rounded-xl bg-paper-950/90 border border-paper-border space-y-3 text-left">
           <!-- Conteúdo dinâmico da era -->
         </div>
       </div>
@@ -484,25 +825,27 @@
         </p>
       </div>
 
-      <div class="w-full p-6 rounded-2xl bg-paper-900 border border-paper-border space-y-6">
+      <div class="w-full p-6 rounded-2xl bg-paper-900/85 backdrop-blur-md border border-paper-border space-y-6 card-float-2 glow-coral tech-corner-card">
         <div class="flex items-center justify-between text-xs font-mono text-paper-muted">
           <span>Ambiente: ARPANET (Computadores PDP-10 / Sistema TENEX)</span>
-          <button onclick="runCreeperJumpDemo()" class="text-sky-400 hover:text-sky-300 font-mono">Disparar
-            Salto</button>
+          <button onclick="runCreeperJumpDemo()" class="sim-control-btn text-sky-300 hover:text-white font-mono flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-lg bg-sky-950/60 border border-sky-400/40 hover:border-sky-400 transition-all" title="Simular salto do Creeper entre as máquinas PDP-10">
+            <span class="w-2 h-2 rounded-full bg-sky-400 animate-pulse"></span>
+            Simular Salto
+          </button>
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-4" id="creeperJumpGrid">
-          <div class="p-4 rounded-xl bg-paper-950 border border-paper-border text-center space-y-2" id="nodeCreeperA">
+          <div class="p-4 rounded-xl bg-paper-950/90 border border-paper-border text-center space-y-2 card-float-1 transition-all duration-300" id="nodeCreeperA">
             <span class="text-[10px] font-mono text-paper-muted">PDP-10 • MAQUINA A</span>
             <div class="status-badge text-xs font-mono text-paper-coral font-bold">Creeper Executando</div>
             <p class="text-[11px] text-slate-400">Imprime mensagem e prepara transmissão do binário.</p>
           </div>
-          <div class="p-4 rounded-xl bg-paper-950 border border-paper-border text-center space-y-2" id="nodeCreeperB">
+          <div class="p-4 rounded-xl bg-paper-950/90 border border-paper-border text-center space-y-2 card-float-3 transition-all duration-300" id="nodeCreeperB">
             <span class="text-[10px] font-mono text-paper-muted">PDP-10 • MAQUINA B</span>
             <div class="status-badge text-xs font-mono text-slate-500">Aguardando Conexão</div>
             <p class="text-[11px] text-slate-400">Pronto para receber o processo via rede.</p>
           </div>
-          <div class="p-4 rounded-xl bg-paper-950 border border-paper-border text-center space-y-2" id="nodeCreeperC">
+          <div class="p-4 rounded-xl bg-paper-950/90 border border-paper-border text-center space-y-2 card-float-4 transition-all duration-300" id="nodeCreeperC">
             <span class="text-[10px] font-mono text-paper-muted">PDP-10 • MAQUINA C</span>
             <div class="status-badge text-xs font-mono text-slate-500">Ocioso</div>
             <p class="text-[11px] text-slate-400">Próximo nó da rota na ARPANET.</p>
@@ -510,7 +853,7 @@
         </div>
 
         <div
-          class="p-4 rounded-xl bg-paper-950 border border-paper-border text-xs text-slate-300 font-mono text-center">
+          class="p-4 rounded-xl bg-paper-950/90 border border-paper-coral/30 text-xs text-slate-300 font-mono text-center tracking-wide">
           Mensagem na Tela: <span class="text-paper-coral font-sans font-medium italic">"I'M THE CREEPER: CATCH ME IF
             YOU CAN!"</span>
         </div>
@@ -531,16 +874,16 @@
         </p>
       </div>
 
-      <div class="w-full p-6 rounded-2xl bg-paper-900 border border-paper-border space-y-6">
+      <div class="w-full p-6 rounded-2xl bg-paper-900/85 backdrop-blur-md border border-paper-border space-y-6 card-float-1 glow-emerald tech-corner-card">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-left">
-          <div class="p-5 rounded-xl bg-paper-950 border border-paper-border space-y-2">
+          <div class="p-5 rounded-xl bg-paper-950/90 border border-paper-coral/40 space-y-2 card-float-3 glow-coral tech-corner-card">
             <span class="text-xs font-mono text-paper-coral font-semibold">A Presa (Creeper)</span>
             <p class="text-xs text-paper-muted leading-relaxed">
               Saltava entre nós ocupando a memória e imprimindo mensagens. Não limpava seu rastro adequadamente,
               deixando instâncias para trás.
             </p>
           </div>
-          <div class="p-5 rounded-xl bg-paper-950 border border-emerald-500/40 space-y-2">
+          <div class="p-5 rounded-xl bg-paper-950/90 border border-emerald-500/50 space-y-2 card-float-4 glow-emerald tech-corner-card">
             <span class="text-xs font-mono text-emerald-400 font-semibold">O Predador (Reaper)</span>
             <p class="text-xs text-paper-muted leading-relaxed">
               Viajava pela ARPANET com uma missão exclusiva: inspecionar processos ativos, detectar o Creeper,
@@ -550,7 +893,7 @@
         </div>
 
         <div
-          class="p-4 rounded-xl bg-paper-850/60 border border-paper-border text-xs text-slate-300 font-mono text-center">
+          class="p-4 rounded-xl bg-paper-950/80 border border-paper-border text-xs text-slate-300 font-mono text-center">
           Conceito Histórico: A defesa em segurança da informação nasceu espelhando os mesmos mecanismos do ataque.
         </div>
       </div>
@@ -574,18 +917,18 @@
       </p>
 
       <!-- Pergunta Reflexiva Interativa -->
-      <div class="w-full max-w-xl p-6 rounded-2xl bg-paper-900 border border-paper-border text-left space-y-4">
+      <div class="w-full max-w-xl p-6 rounded-2xl bg-paper-900/85 backdrop-blur-md border border-paper-border text-left space-y-4 card-float-2 glow-coral tech-corner-card">
         <h4 class="text-sm font-semibold text-slate-100">
           Pergunta Reflexiva: O Morris Worm precisava apagar arquivos para causar estragos milionários?
         </h4>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3" id="morrisQuestionBtns">
           <button onclick="revealMorrisAnswer(this, true)"
-            class="p-3 rounded-xl bg-paper-800 hover:bg-paper-850 border border-paper-border text-xs text-slate-200 text-left font-mono transition-all">
+            class="p-3 rounded-xl bg-paper-950/80 hover:bg-paper-850 border border-paper-border text-xs text-slate-200 text-left font-mono transition-all">
             Não. A própria replicação desenfreada consumiu CPU e memória até travar os nós.
           </button>
           <button onclick="revealMorrisAnswer(this, false)"
-            class="p-3 rounded-xl bg-paper-800 hover:bg-paper-850 border border-paper-border text-xs text-slate-200 text-left font-mono transition-all">
+            class="p-3 rounded-xl bg-paper-950/80 hover:bg-paper-850 border border-paper-border text-xs text-slate-200 text-left font-mono transition-all">
             Sim. Ele corrompia as tabelas de partição de todos os computadores.
           </button>
         </div>
@@ -616,7 +959,7 @@
       </div>
 
       <div id="lifecycleDetailCard"
-        class="w-full p-6 rounded-2xl bg-paper-900 border border-paper-border space-y-2 text-left">
+        class="w-full p-6 rounded-2xl bg-paper-900/85 backdrop-blur-md border border-paper-border space-y-2 text-left card-float-1 glow-cyan tech-corner-card">
         <div class="flex items-center justify-between text-xs font-mono text-sky-400">
           <span id="lifecycleDetailStep">Etapa 1 de 6</span>
           <span class="text-paper-muted">Interativo</span>
@@ -642,11 +985,44 @@
       </div>
 
       <!-- Simulador Visual de Port Scanning -->
-      <div class="w-full max-w-xl p-6 rounded-2xl bg-paper-900 border border-paper-border space-y-4">
+      <div class="w-full max-w-xl p-6 rounded-2xl bg-paper-900/85 backdrop-blur-md border border-paper-border space-y-4 card-float-1 glow-cyan tech-corner-card">
         <div class="flex items-center justify-between text-xs font-mono text-paper-muted">
-          <span>Sonda Direcionada: IP 192.168.1.45</span>
-          <button id="btnScanPorts" class="text-sky-400 hover:text-sky-300 font-mono">Disparar Sonda TCP SYN</button>
+          <span class="flex items-center gap-1.5">
+            <span class="w-2 h-2 rounded-full bg-sky-400 animate-ping"></span>
+            Sonda Direcionada: IP 192.168.1.45
+          </span>
+          <button id="btnScanPorts" class="sim-control-btn text-sky-300 hover:text-white font-mono flex items-center gap-1.5 px-3 py-1 rounded-lg bg-sky-950/60 border border-sky-400/40 hover:border-sky-400 transition-all text-xs" title="Simular envio de pacotes TCP SYN nesta cena">
+            <svg class="w-3.5 h-3.5 text-sky-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+            </svg>
+            Simular Varredura SYN
+          </button>
         </div>
+
+        <!-- Trilho Visual de Comunicação (Host Atacante <-> Host Alvo) -->
+        <div class="p-3.5 rounded-xl bg-paper-950/90 border border-paper-border space-y-2.5">
+          <div class="flex items-center justify-between text-[11px] font-mono">
+            <div class="flex items-center gap-2">
+              <span class="w-2.5 h-2.5 rounded bg-sky-400"></span>
+              <span class="text-slate-300 font-semibold">192.168.1.10 (Scanner)</span>
+            </div>
+            <span id="scanStatusBadge" class="text-[10px] text-paper-muted px-2 py-0.5 rounded bg-paper-900 border border-paper-border">Pronto para Sonda</span>
+            <div class="flex items-center gap-2">
+              <span class="text-slate-300 font-semibold">192.168.1.45 (Alvo)</span>
+              <span class="w-2.5 h-2.5 rounded bg-paper-coral"></span>
+            </div>
+          </div>
+
+          <div class="packet-rail relative" id="portScanRail">
+            <div id="packetRunnerSYN" class="packet-runner bg-sky-500 text-slate-950 font-bold opacity-0" style="left: 0%;">
+              TCP SYN ➔
+            </div>
+            <div id="packetRunnerACK" class="packet-runner bg-rose-500 text-white font-bold opacity-0" style="left: 70%;">
+              ⇠ RESPOSTA
+            </div>
+          </div>
+        </div>
+
         <div class="space-y-2 font-mono text-xs" id="portScanResults">
           <!-- Portas 22, 80, 445, 3389 -->
         </div>
@@ -670,30 +1046,30 @@
       </div>
 
       <div class="grid grid-cols-1 sm:grid-cols-4 gap-4 w-full text-left">
-        <div class="p-5 rounded-2xl bg-paper-900 border border-paper-border space-y-2">
+        <div class="p-5 rounded-2xl bg-paper-900/85 backdrop-blur-md border border-paper-border space-y-2 card-float-1 glow-cyan tech-corner-card">
           <span
-            class="w-7 h-7 rounded-full bg-paper-800 text-sky-400 font-mono text-xs flex items-center justify-center">1</span>
+            class="w-7 h-7 rounded-full bg-paper-800 text-sky-400 font-mono text-xs flex items-center justify-center font-bold">1</span>
           <h4 class="text-sm font-semibold text-slate-200">Computador Ativo</h4>
           <p class="text-xs text-paper-muted leading-relaxed">Possui um endereço IP conectado à rede corporativa.</p>
         </div>
 
-        <div class="p-5 rounded-2xl bg-paper-900 border border-paper-border space-y-2">
+        <div class="p-5 rounded-2xl bg-paper-900/85 backdrop-blur-md border border-paper-border space-y-2 card-float-2 glow-cyan tech-corner-card">
           <span
-            class="w-7 h-7 rounded-full bg-paper-800 text-sky-400 font-mono text-xs flex items-center justify-center">2</span>
+            class="w-7 h-7 rounded-full bg-paper-800 text-sky-400 font-mono text-xs flex items-center justify-center font-bold">2</span>
           <h4 class="text-sm font-semibold text-slate-200">Serviço Ouvinte</h4>
           <p class="text-xs text-paper-muted leading-relaxed">Um programa rodando em segundo plano (compartilhamento
             SMB, banco de dados).</p>
         </div>
 
-        <div class="p-5 rounded-2xl bg-paper-900 border border-paper-border space-y-2">
+        <div class="p-5 rounded-2xl bg-paper-900/85 backdrop-blur-md border border-paper-border space-y-2 card-float-3 glow-amber tech-corner-card">
           <span
-            class="w-7 h-7 rounded-full bg-paper-800 text-sky-400 font-mono text-xs flex items-center justify-center">3</span>
+            class="w-7 h-7 rounded-full bg-paper-800 text-amber-400 font-mono text-xs flex items-center justify-center font-bold">3</span>
           <h4 class="text-sm font-semibold text-slate-200">Comunicação Aberta</h4>
           <p class="text-xs text-paper-muted leading-relaxed">O serviço responde a pacotes da rede interna sem exigir
             autenticação prévia.</p>
         </div>
 
-        <div class="p-5 rounded-2xl bg-paper-900 border border-paper-coral/50 space-y-2 bg-rose-950/10">
+        <div class="p-5 rounded-2xl bg-paper-900/85 backdrop-blur-md border border-paper-coral/50 space-y-2 bg-rose-950/20 card-float-4 glow-coral tech-corner-card">
           <span
             class="w-7 h-7 rounded-full bg-paper-coral/20 text-paper-coral font-mono text-xs flex items-center justify-center font-bold">4</span>
           <h4 class="text-sm font-semibold text-paper-coral">A Vulnerabilidade</h4>
@@ -720,7 +1096,7 @@
       <!-- Demonstração Gráfica: Porta Trancada vs Porta com Folga -->
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 w-full">
         <!-- Porta Segura -->
-        <div class="p-6 rounded-2xl bg-paper-900 border border-paper-border space-y-4 text-center">
+        <div class="p-6 rounded-2xl bg-paper-900/85 backdrop-blur-md border border-emerald-500/40 space-y-4 text-center card-float-1 glow-emerald tech-corner-card">
           <div
             class="w-16 h-24 mx-auto border-2 border-emerald-500/50 rounded-lg flex items-center justify-center bg-emerald-950/20">
             <svg class="w-6 h-6 text-emerald-400" fill="currentColor" viewBox="0 0 20 20">
@@ -738,7 +1114,7 @@
 
         <!-- Porta Vulnerável -->
         <div
-          class="p-6 rounded-2xl bg-paper-900 border-2 border-paper-coral/40 space-y-4 text-center shadow-lg shadow-rose-500/5">
+          class="p-6 rounded-2xl bg-paper-900/85 backdrop-blur-md border-2 border-paper-coral/50 space-y-4 text-center shadow-lg shadow-rose-500/10 card-float-2 glow-coral tech-corner-card">
           <div
             class="w-16 h-24 mx-auto border-2 border-dashed border-paper-coral rounded-lg flex items-center justify-center bg-rose-950/20">
             <svg class="w-6 h-6 text-paper-coral animate-pulse" fill="currentColor" viewBox="0 0 20 20">
@@ -769,32 +1145,32 @@
       </div>
 
       <!-- Diagrama de Fluxo Lógico -->
-      <div class="w-full p-6 rounded-2xl bg-paper-900 border border-paper-border space-y-6">
+      <div class="w-full p-6 rounded-2xl bg-paper-900/85 backdrop-blur-md border border-paper-border space-y-6 card-float-1 glow-amber tech-corner-card">
         <div class="grid grid-cols-1 md:grid-cols-4 gap-3 text-left">
 
-          <div class="p-4 rounded-xl bg-paper-950 border border-paper-border space-y-2">
-            <span class="text-[10px] font-mono text-sky-400 block">Passo 1</span>
+          <div class="p-4 rounded-xl bg-paper-950/90 border border-sky-500/30 space-y-2 card-float-2 glow-cyan">
+            <span class="text-[10px] font-mono text-sky-400 block font-bold">Passo 1</span>
             <h4 class="text-xs font-bold text-slate-200">Envio do Pacote Especial</h4>
             <p class="text-[11px] text-paper-muted">O worm remete uma mensagem artesanalmente calculada para a porta
               aberta.</p>
           </div>
 
-          <div class="p-4 rounded-xl bg-paper-950 border border-paper-border space-y-2">
-            <span class="text-[10px] font-mono text-amber-400 block">Passo 2</span>
+          <div class="p-4 rounded-xl bg-paper-950/90 border border-amber-500/30 space-y-2 card-float-3 glow-amber">
+            <span class="text-[10px] font-mono text-amber-400 block font-bold">Passo 2</span>
             <h4 class="text-xs font-bold text-slate-200">Estouro do Buffer</h4>
             <p class="text-[11px] text-paper-muted">A memória do serviço receptor é sobrescrita, desviando o ponteiro de
               execução.</p>
           </div>
 
-          <div class="p-4 rounded-xl bg-paper-950 border border-paper-border space-y-2">
-            <span class="text-[10px] font-mono text-paper-coral block">Passo 3</span>
+          <div class="p-4 rounded-xl bg-paper-950/90 border border-paper-coral/40 space-y-2 card-float-4 glow-coral">
+            <span class="text-[10px] font-mono text-paper-coral block font-bold">Passo 3</span>
             <h4 class="text-xs font-bold text-slate-200">Execução do Shellcode</h4>
             <p class="text-[11px] text-paper-muted">Um minúsculo conjunto de instruções roda com privilégios de sistema
               e baixa o worm completo.</p>
           </div>
 
-          <div class="p-4 rounded-xl bg-paper-950 border border-paper-border space-y-2">
-            <span class="text-[10px] font-mono text-emerald-400 block">Passo 4</span>
+          <div class="p-4 rounded-xl bg-paper-950/90 border border-emerald-500/40 space-y-2 card-float-1 glow-emerald">
+            <span class="text-[10px] font-mono text-emerald-400 block font-bold">Passo 4</span>
             <h4 class="text-xs font-bold text-slate-200">Novo Transmissor</h4>
             <p class="text-[11px] text-paper-muted">A máquina invadida se torna uma nova emissora de sondas, reiniciando
               o ciclo.</p>
@@ -802,7 +1178,7 @@
         </div>
 
         <div
-          class="p-3 bg-paper-850/60 rounded-xl border border-paper-border text-xs text-center text-slate-300 font-mono">
+          class="p-3 bg-paper-950/80 rounded-xl border border-paper-border text-xs text-center text-slate-300 font-mono">
           Sem intervenção de usuário. Sem janelas popup. Apenas tráfego legítimo de rede corrompido em nível binário.
         </div>
       </div>
@@ -821,23 +1197,55 @@
         </p>
       </div>
 
-      <div class="w-full max-w-2xl p-6 rounded-2xl bg-paper-900 border border-paper-border space-y-4">
-        <div class="space-y-4 font-mono text-xs text-left">
-          <div class="flex items-center gap-3">
-            <span
-              class="w-8 h-8 rounded-full bg-paper-coral text-white font-bold flex items-center justify-center text-xs">A</span>
+      <div class="w-full max-w-2xl p-6 rounded-2xl bg-paper-900/85 backdrop-blur-md border border-paper-border space-y-5 card-float-1 glow-coral tech-corner-card">
+        <!-- Barra de Controle do Stepper de Cascata -->
+        <div class="flex flex-wrap items-center justify-between gap-3 border-b border-paper-border/60 pb-3 text-xs font-mono">
+          <div class="flex items-center gap-1.5 flex-wrap">
+            <span class="text-paper-muted mr-1">Rodada:</span>
+            <button onclick="setCascadeStep(0)" class="cascade-step-btn px-2.5 py-1 rounded-lg border border-paper-coral bg-rose-500/20 text-rose-200 font-bold transition-all">01 Nó</button>
+            <button onclick="setCascadeStep(1)" class="cascade-step-btn px-2.5 py-1 rounded-lg border border-paper-border hover:border-slate-500 text-paper-muted transition-all">02 Nós</button>
+            <button onclick="setCascadeStep(2)" class="cascade-step-btn px-2.5 py-1 rounded-lg border border-paper-border hover:border-slate-500 text-paper-muted transition-all">04 Nós</button>
+            <button onclick="setCascadeStep(3)" class="cascade-step-btn px-2.5 py-1 rounded-lg border border-paper-border hover:border-slate-500 text-paper-muted transition-all">08 Nós</button>
+            <button onclick="setCascadeStep(4)" class="cascade-step-btn px-2.5 py-1 rounded-lg border border-paper-border hover:border-slate-500 text-paper-muted transition-all">16 Nós</button>
+            <button onclick="setCascadeStep(5)" class="cascade-step-btn px-2.5 py-1 rounded-lg border border-paper-border hover:border-slate-500 text-paper-muted transition-all">32 Nós</button>
+          </div>
+          <button id="btnAutoCascade" onclick="runAutoCascadeAnimation()" class="sim-control-btn px-3 py-1 rounded-lg bg-paper-coral/20 hover:bg-paper-coral/30 text-paper-coral border border-paper-coral/40 flex items-center gap-1.5 transition-all text-xs" title="Executar simulação automática de multiplicação de transmissores">
+            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+            </svg>
+            Simular Auto Cascata
+          </button>
+        </div>
+
+        <!-- Telemetria de Cascata em Tempo Real -->
+        <div class="grid grid-cols-3 gap-2 text-center font-mono text-[11px] py-1 bg-paper-950/70 rounded-xl border border-paper-border">
+          <div>
+            <span class="text-slate-500 block text-[10px]">TRANSMISSORES</span>
+            <span id="cascadeTransmittersCount" class="text-paper-coral font-bold text-sm">1 Host</span>
+          </div>
+          <div>
+            <span class="text-slate-500 block text-[10px]">SONDAS / SEGUNDO</span>
+            <span id="cascadeProbesRate" class="text-amber-400 font-bold text-sm">~150 pkts/s</span>
+          </div>
+          <div>
+            <span class="text-slate-500 block text-[10px]">SATURAÇÃO LOCAL</span>
+            <span id="cascadeSaturationStatus" class="text-sky-400 font-bold text-sm">3.3%</span>
+          </div>
+        </div>
+
+        <div class="space-y-4 font-mono text-xs text-left" id="cascadeTreeContainer">
+          <div class="cascade-row flex items-center gap-3 p-2 rounded-xl transition-all bg-paper-950/40 border border-paper-coral/30" id="cascadeRow-0">
+            <span class="w-8 h-8 rounded-full bg-paper-coral text-white font-bold flex items-center justify-center text-xs shadow-md shadow-rose-500/40">A</span>
             <div>
               <span class="text-slate-200 font-semibold block">Minuto 0: Paciente Zero Ativo</span>
               <span class="text-paper-muted text-[11px]">Varredura: 1 máquina procurando alvos na rede local.</span>
             </div>
           </div>
 
-          <div class="flex items-center gap-3 pl-6 border-l-2 border-paper-border">
+          <div class="cascade-row flex items-center gap-3 pl-6 border-l-2 border-paper-border p-2 rounded-xl transition-all" id="cascadeRow-1">
             <div class="flex gap-1.5">
-              <span
-                class="w-8 h-8 rounded-full bg-paper-coral text-white font-bold flex items-center justify-center text-xs">A</span>
-              <span
-                class="w-8 h-8 rounded-full bg-paper-coral text-white font-bold flex items-center justify-center text-xs">B</span>
+              <span class="w-8 h-8 rounded-full bg-paper-coral text-white font-bold flex items-center justify-center text-xs">A</span>
+              <span class="w-8 h-8 rounded-full bg-paper-coral text-white font-bold flex items-center justify-center text-xs">B</span>
             </div>
             <div>
               <span class="text-slate-200 font-semibold block">Minuto 1: 2 Transmissores em Paralelo</span>
@@ -845,16 +1253,12 @@
             </div>
           </div>
 
-          <div class="flex items-center gap-3 pl-12 border-l-2 border-paper-border">
+          <div class="cascade-row flex items-center gap-3 pl-12 border-l-2 border-paper-border p-2 rounded-xl transition-all" id="cascadeRow-2">
             <div class="flex gap-1.5">
-              <span
-                class="w-7 h-7 rounded-full bg-paper-coral text-white flex items-center justify-center text-[10px]">A</span>
-              <span
-                class="w-7 h-7 rounded-full bg-paper-coral text-white flex items-center justify-center text-[10px]">B</span>
-              <span
-                class="w-7 h-7 rounded-full bg-paper-coral text-white flex items-center justify-center text-[10px]">C</span>
-              <span
-                class="w-7 h-7 rounded-full bg-paper-coral text-white flex items-center justify-center text-[10px]">D</span>
+              <span class="w-7 h-7 rounded-full bg-paper-coral text-white flex items-center justify-center text-[10px]">A</span>
+              <span class="w-7 h-7 rounded-full bg-paper-coral text-white flex items-center justify-center text-[10px]">B</span>
+              <span class="w-7 h-7 rounded-full bg-paper-coral text-white flex items-center justify-center text-[10px]">C</span>
+              <span class="w-7 h-7 rounded-full bg-paper-coral text-white flex items-center justify-center text-[10px]">D</span>
             </div>
             <div>
               <span class="text-slate-200 font-semibold block">Minuto 2: 4 Transmissores Ativos</span>
@@ -863,8 +1267,7 @@
           </div>
         </div>
 
-        <div
-          class="p-3 bg-paper-950 rounded-xl border border-paper-border text-xs text-amber-300 font-mono text-center">
+        <div class="p-3 bg-paper-950 rounded-xl border border-paper-border text-xs text-amber-300 font-mono text-center">
           A progressão geométrica transforma poucas centenas de pacotes em uma tempestade devastadora.
         </div>
       </div>
@@ -883,43 +1286,52 @@
         </p>
       </div>
 
+      <!-- Seletor Interativo da Taxa r -->
+      <div class="w-full flex flex-wrap items-center justify-between gap-3 p-3 rounded-xl bg-paper-900/80 border border-paper-border font-mono text-xs">
+        <span class="text-paper-muted">Ajustar Taxa Reprodutiva ($r$):</span>
+        <div class="flex items-center gap-2">
+          <button onclick="setMathReproductionRate(1.0)" id="btnRate1" class="math-rate-btn px-3 py-1 rounded-lg border border-paper-border hover:border-slate-400 text-paper-muted transition-all">r = 1.0 (Linear)</button>
+          <button onclick="setMathReproductionRate(1.4)" id="btnRate2" class="math-rate-btn px-3 py-1 rounded-lg border border-amber-400/50 bg-amber-500/10 text-amber-300 transition-all">r = 1.4 (Rápido)</button>
+          <button onclick="setMathReproductionRate(2.0)" id="btnRate3" class="math-rate-btn px-3 py-1 rounded-lg border border-paper-coral bg-rose-500/20 text-rose-200 font-bold transition-all">r = 2.0 (Explosão Crítica)</button>
+        </div>
+      </div>
+
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6 w-full items-center">
         <!-- Explicação Matemática -->
-        <div class="p-6 rounded-2xl bg-paper-900 border border-paper-border space-y-4 text-left">
+        <div class="p-6 rounded-2xl bg-paper-900/85 backdrop-blur-md border border-paper-border space-y-4 text-left card-float-1 glow-coral tech-corner-card">
           <h3 class="font-mono text-sm text-sky-400 font-bold">O Limiar Exponencial:</h3>
           <p class="text-xs text-paper-muted leading-relaxed">
             Se a taxa de reprodução $r$ for maior que 1, a curva dobra de tamanho a cada intervalo de tempo $t$.
           </p>
-          <div class="space-y-2 font-mono text-xs bg-paper-950 p-4 rounded-xl border border-paper-border">
-            <div class="flex justify-between"><span class="text-slate-400">Minuto 0:</span> <span
-                class="text-slate-200 font-bold">1 nó</span></div>
-            <div class="flex justify-between"><span class="text-slate-400">Minuto 5:</span> <span
-                class="text-slate-200 font-bold">32 nós</span></div>
-            <div class="flex justify-between"><span class="text-slate-400">Minuto 10:</span> <span
-                class="text-amber-400 font-bold">1.024 nós</span></div>
-            <div class="flex justify-between"><span class="text-slate-400">Minuto 15:</span> <span
-                class="text-paper-coral font-bold">32.768 nós!</span></div>
+          <div id="mathProjectionTable" class="space-y-2 font-mono text-xs bg-paper-950 p-4 rounded-xl border border-paper-border">
+            <div class="flex justify-between"><span class="text-slate-400">Minuto 0:</span> <span class="text-slate-200 font-bold">1 nó</span></div>
+            <div class="flex justify-between"><span class="text-slate-400">Minuto 5:</span> <span class="text-slate-200 font-bold">32 nós</span></div>
+            <div class="flex justify-between"><span class="text-slate-400">Minuto 10:</span> <span class="text-amber-400 font-bold">1.024 nós</span></div>
+            <div class="flex justify-between"><span class="text-slate-400">Minuto 15:</span> <span class="text-paper-coral font-bold">32.768 nós!</span></div>
           </div>
         </div>
 
-        <!-- Gráfico SVG Logístico -->
-        <div class="p-6 rounded-2xl bg-paper-900 border border-paper-border space-y-3">
-          <span class="text-xs font-mono text-slate-300 font-semibold block">Curva de Saturação (Nós vs Tempo)</span>
+        <!-- Gráfico SVG Logístico Dinâmico -->
+        <div class="p-6 rounded-2xl bg-paper-900/85 backdrop-blur-md border border-paper-border space-y-3 card-float-2 glow-coral tech-corner-card">
+          <div class="flex items-center justify-between text-xs font-mono text-slate-300 font-semibold">
+            <span>Curva de Saturação (Nós vs Tempo)</span>
+            <span id="rateLabelBadge" class="text-paper-coral font-bold">r = 2.0</span>
+          </div>
           <div class="w-full h-44 relative">
-            <svg viewBox="0 0 300 140" class="w-full h-full overflow-visible">
+            <svg viewBox="0 0 300 140" class="w-full h-full overflow-visible" id="saturationGraphSvg">
               <line x1="25" y1="10" x2="25" y2="120" stroke="#233254" stroke-width="1.5" />
               <line x1="25" y1="120" x2="290" y2="120" stroke="#233254" stroke-width="1.5" />
-              <path d="M 25 119 C 100 119, 140 115, 180 60 C 210 20, 240 15, 290 15" fill="none" stroke="#f43f5e"
-                stroke-width="3" />
-              <text x="20" y="20" fill="#7e8ea6" font-family="JetBrains Mono" font-size="8"
-                text-anchor="end">100%</text>
+              <!-- Curva Dinâmica -->
+              <path id="saturationCurvePath" d="M 25 119 C 100 119, 140 115, 180 60 C 210 20, 240 15, 290 15" fill="none" stroke="#f43f5e" stroke-width="3" />
+              <!-- Ponto Pulsante na Curva -->
+              <circle id="saturationCurveDot" cx="210" cy="35" r="4.5" fill="#f43f5e" class="animate-pulse" />
+              <text x="20" y="20" fill="#7e8ea6" font-family="JetBrains Mono" font-size="8" text-anchor="end">100%</text>
               <text x="20" y="120" fill="#7e8ea6" font-family="JetBrains Mono" font-size="8" text-anchor="end">0%</text>
-              <text x="285" y="132" fill="#7e8ea6" font-family="JetBrains Mono" font-size="8" text-anchor="end">Tempo
-                (min)</text>
+              <text x="285" y="132" fill="#7e8ea6" font-family="JetBrains Mono" font-size="8" text-anchor="end">Tempo (min)</text>
             </svg>
           </div>
-          <p class="text-[11px] font-mono text-paper-muted">
-            A fase de explosão ocorre quando há abundância de computadores vulneráveis na mesma sub-rede.
+          <p id="mathRateDescription" class="text-[11px] font-mono text-paper-muted">
+            Em r = 2.0, a cada ciclo os nós contaminados duplicam o poder de varredura global.
           </p>
         </div>
       </div>
@@ -940,7 +1352,7 @@
 
       <!-- 4 Cards de Impacto -->
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full text-left">
-        <div class="p-5 rounded-2xl bg-paper-900 border border-paper-border space-y-2">
+        <div class="p-5 rounded-2xl bg-paper-900/85 backdrop-blur-md border border-sky-500/30 space-y-2 card-float-1 glow-cyan tech-corner-card">
           <span class="text-xs font-mono text-sky-400 font-bold block">1. Criação de Botnets</span>
           <h3 class="text-sm font-semibold text-slate-200">Exércitos de Máquinas Zumbis</h3>
           <p class="text-xs text-paper-muted leading-relaxed">
@@ -949,7 +1361,7 @@
           </p>
         </div>
 
-        <div class="p-5 rounded-2xl bg-paper-900 border border-paper-border space-y-2">
+        <div class="p-5 rounded-2xl bg-paper-900/85 backdrop-blur-md border border-amber-500/30 space-y-2 card-float-2 glow-amber tech-corner-card">
           <span class="text-xs font-mono text-amber-400 font-bold block">2. Ataques de Negação (DDoS)</span>
           <h3 class="text-sm font-semibold text-slate-200">Saturação em Massa</h3>
           <p class="text-xs text-paper-muted leading-relaxed">
@@ -958,7 +1370,7 @@
           </p>
         </div>
 
-        <div class="p-5 rounded-2xl bg-paper-900 border border-paper-border space-y-2">
+        <div class="p-5 rounded-2xl bg-paper-900/85 backdrop-blur-md border border-paper-coral/40 space-y-2 card-float-3 glow-coral tech-corner-card">
           <span class="text-xs font-mono text-paper-coral font-bold block">3. Exaustão de Recursos e Banda</span>
           <h3 class="text-sm font-semibold text-slate-200">Congelamento de Infraestrutura</h3>
           <p class="text-xs text-paper-muted leading-relaxed">
@@ -967,7 +1379,7 @@
           </p>
         </div>
 
-        <div class="p-5 rounded-2xl bg-paper-900 border border-paper-border space-y-2">
+        <div class="p-5 rounded-2xl bg-paper-900/85 backdrop-blur-md border border-rose-500/60 space-y-2 bg-rose-950/20 card-float-4 glow-coral tech-corner-card">
           <span class="text-xs font-mono text-emerald-400 font-bold block">4. Propagação de Ransomware</span>
           <h3 class="text-sm font-semibold text-slate-200">Movimento Lateral Destrutivo</h3>
           <p class="text-xs text-paper-muted leading-relaxed">
@@ -997,57 +1409,38 @@
       </div>
 
       <div
-        class="w-full p-4 rounded-xl bg-paper-900 border border-paper-border text-xs text-slate-300 font-mono text-center">
+        class="w-full p-4 rounded-xl bg-paper-900/85 backdrop-blur-md border border-emerald-500/40 text-xs text-slate-300 font-mono text-center card-float-1 glow-emerald tech-corner-card">
         Eficácia Global da Arquitetura: <span id="defenseScoreText" class="text-emerald-400 font-bold">100%
           Protegido</span>
       </div>
     </section>
 
     <!-- --------------------------------------------------------------------
-         CENA 18 — Síntese Final
+         CENA 18 — Encerramento & Agradecimento (Meme Final)
          -------------------------------------------------------------------- -->
     <section id="scene-17"
-      class="scene-view flex-col items-center justify-center w-full max-w-4xl space-y-8 text-center my-auto">
-      <div class="space-y-3 max-w-2xl">
-        <span class="text-xs font-mono tracking-widest uppercase text-sky-400 font-semibold">Cena 18 • Síntese e
-          Desfecho</span>
-        <h2 class="font-serif text-3xl sm:text-4xl md:text-5xl text-slate-100 font-medium">
-          O Olhar Revelado
-        </h2>
-        <p class="text-paper-muted text-base font-light leading-relaxed">
-          Retorne à Cena 01. Aquela propagação que antes parecia um mistério agora revela sua verdadeira mecânica aos
-          seus olhos:
-        </p>
-      </div>
-
-      <!-- Resumo dos 4 Mecanismos Ocultos Dominados -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 w-full text-left font-mono text-xs">
-        <div class="p-4 rounded-xl bg-paper-900 border border-paper-border space-y-1">
-          <span class="text-sky-400 font-bold block">1. Autonomia</span>
-          <p class="text-paper-muted">Não depende de cliques humanos nem de arquivos hospedeiros.</p>
+      class="scene-view flex-col items-center justify-center w-full max-w-4xl text-center my-auto py-2">
+      <div class="meme-card flex flex-col items-center justify-center p-3 sm:p-5 rounded-3xl bg-paper-900/80 backdrop-blur-xl border border-paper-border/80 shadow-2xl shadow-black/80 max-w-lg md:max-w-xl w-full mx-auto">
+        <!-- Imagem Preservada Intacta -->
+        <div class="relative w-full flex items-center justify-center overflow-hidden rounded-2xl bg-paper-950/60 p-2 sm:p-3 border border-paper-border/40">
+          <img src="final_meme.jpg" alt="Meme de encerramento - Obrigado pela atenção" class="meme-img max-h-[50vh] sm:max-h-[56vh] md:max-h-[60vh] w-auto max-w-full object-contain rounded-xl select-none" />
         </div>
-        <div class="p-4 rounded-xl bg-paper-900 border border-paper-border space-y-1">
-          <span class="text-amber-400 font-bold block">2. Varredura</span>
-          <p class="text-paper-muted">Localiza ativamente portas abertas e serviços vulneráveis.</p>
-        </div>
-        <div class="p-4 rounded-xl bg-paper-900 border border-paper-border space-y-1">
-          <span class="text-paper-coral font-bold block">3. Matemática</span>
-          <p class="text-paper-muted">Crescimento exponencial $N_0 \times r^t$ satura a rede em minutos.</p>
-        </div>
-        <div class="p-4 rounded-xl bg-paper-900 border border-paper-border space-y-1">
-          <span class="text-emerald-400 font-bold block">4. Contenção</span>
-          <p class="text-paper-muted">Segmentação, portas fechadas e patches anulam o vetor de locomoção.</p>
+        <!-- Texto Sutil de Agradecimento -->
+        <div class="mt-4 space-y-1 text-center">
+          <h2 class="font-serif text-2xl sm:text-3xl text-slate-100 font-medium tracking-tight">Obrigado pela atenção!</h2>
+          <p class="text-xs sm:text-sm font-mono text-paper-muted">Dúvidas, perguntas ou vulnerabilidades de dia zero? 👍</p>
         </div>
       </div>
 
-      <div class="flex flex-wrap items-center justify-center gap-3 pt-4">
+      <div class="mt-4">
         <button onclick="goToScene(0)"
-          class="px-5 py-2.5 rounded-xl bg-slate-100 hover:bg-white text-paper-950 font-medium text-xs md:text-sm transition-all shadow-lg flex items-center gap-2">
-          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          class="sim-control-btn px-4 py-1.5 rounded-xl bg-paper-900/60 hover:bg-paper-800 border border-paper-border hover:border-sky-400/50 text-slate-400 hover:text-slate-200 text-xs font-mono transition-all flex items-center gap-2 mx-auto"
+          title="Reiniciar apresentação do primeiro slide">
+          <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
               d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
           </svg>
-          Rever a Apresentação
+          Rever Apresentação (Início)
         </button>
       </div>
     </section>
@@ -1055,10 +1448,80 @@
   </main>
 
   <!-- ======================================================================
+       HINT FLUTUANTE DE NAVEGAÇÃO (APARECE NO PRIMEIRO SLIDE)
+       ====================================================================== -->
+  <div id="navigationAutoHint"
+    class="fixed bottom-20 left-1/2 -translate-x-1/2 z-40 px-4 py-2 rounded-full bg-paper-950/90 backdrop-blur-md border border-sky-400/40 text-sky-200 text-xs font-mono flex items-center gap-2.5 shadow-2xl shadow-sky-950/60 pointer-events-none transition-all duration-500 opacity-100 select-none">
+    <span class="w-2 h-2 rounded-full bg-sky-400 animate-ping"></span>
+    <span class="text-slate-300">Navegue com <kbd class="px-1.5 py-0.5 rounded bg-paper-900 border border-paper-border text-sky-300 font-bold">←</kbd> <kbd class="px-1.5 py-0.5 rounded bg-paper-900 border border-paper-border text-sky-300 font-bold">→</kbd> ou <kbd class="px-2 py-0.5 rounded bg-paper-900 border border-paper-border text-sky-300 font-bold">Espaço</kbd></span>
+  </div>
+
+  <!-- ======================================================================
+       HUD DE NAVEGAÇÃO PERSISTENTE DA APRESENTAÇÃO (SLIDE DOCK INFERIOR)
+       ====================================================================== -->
+  <nav id="presentationDock" aria-label="Controles da Apresentação"
+    class="fixed bottom-4 left-1/2 -translate-x-1/2 z-40 flex items-center gap-2 md:gap-3 px-3.5 py-2 rounded-2xl bg-paper-950/90 backdrop-blur-xl border border-paper-border/80 shadow-2xl transition-all select-none">
+    
+    <!-- Botão Slide Anterior -->
+    <button id="dockBtnPrev"
+      class="p-2 rounded-xl text-slate-300 hover:text-white hover:bg-paper-800/80 active:scale-95 disabled:opacity-20 disabled:cursor-not-allowed transition-all border border-transparent hover:border-paper-border flex items-center justify-center"
+      aria-label="Voltar para o slide anterior" title="Slide Anterior (Seta Esquerda)">
+      <svg class="w-4 h-4 md:w-5 md:h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7" />
+      </svg>
+    </button>
+
+    <!-- Indicador Numérico Central: 01 / 18 -->
+    <div class="flex items-center gap-2.5 px-3 py-1 rounded-xl bg-paper-900/80 border border-paper-border/60 text-xs font-mono">
+      <span id="dockSlideNumber" class="text-sky-300 font-bold tracking-widest text-sm">01 / 18</span>
+      <span class="w-1 h-1 rounded-full bg-slate-600 hidden sm:inline-block"></span>
+      <span id="dockSlideTitle" class="text-paper-muted hidden md:inline-block max-w-[200px] truncate text-[11px]">O Incidente</span>
+    </div>
+
+    <!-- Botão Próximo Slide -->
+    <button id="dockBtnNext"
+      class="p-2 rounded-xl text-slate-300 hover:text-white hover:bg-paper-800/80 active:scale-95 disabled:opacity-20 disabled:cursor-not-allowed transition-all border border-transparent hover:border-paper-border flex items-center justify-center"
+      aria-label="Avançar para o próximo slide" title="Próximo Slide (Seta Direita ou Espaço)">
+      <svg class="w-4 h-4 md:w-5 md:h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7" />
+      </svg>
+    </button>
+
+    <!-- Separador Vertical -->
+    <div class="h-4 w-[1px] bg-paper-border/60"></div>
+
+    <!-- Alternador de Som (Web Audio API) -->
+    <button id="btnSoundToggle"
+      class="p-2 rounded-xl text-slate-400 hover:text-sky-300 hover:bg-paper-800/80 active:scale-95 transition-all border border-transparent hover:border-paper-border flex items-center justify-center"
+      aria-label="Ativar ou desativar áudio da apresentação" title="Áudio da Apresentação (M para alternar)">
+      <!-- Ícone Som Ativo -->
+      <svg id="iconSoundOn" class="w-4 h-4 md:w-4.5 md:h-4.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M11 5L6 9H2v6h4l5 4V5z" />
+      </svg>
+      <!-- Ícone Som Mudo (hidden por padrão) -->
+      <svg id="iconSoundOff" class="w-4 h-4 md:w-4.5 md:h-4.5 hidden text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2" />
+      </svg>
+    </button>
+
+    <!-- Botão Sumário / Índice Completo -->
+    <button id="dockBtnIndex"
+      class="p-2 rounded-xl text-slate-400 hover:text-sky-300 hover:bg-paper-800/80 active:scale-95 transition-all border border-transparent hover:border-paper-border flex items-center gap-1.5 text-xs font-mono"
+      aria-label="Abrir sumário dos 18 slides" title="Sumário de Slides (Esc)">
+      <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7" />
+      </svg>
+      <span class="hidden sm:inline text-[11px]">Slides</span>
+    </button>
+
+  </nav>
+
+  <!-- ======================================================================
        RODAPÉ EDITORIAL COM DICA DE NAVEGAÇÃO
        ====================================================================== -->
   <footer
-    class="border-t border-paper-border/60 py-3 px-4 text-center text-xs font-mono text-paper-muted flex items-center justify-between max-w-6xl mx-auto w-full">
+    class="border-t border-paper-border/60 py-3 px-4 pb-20 md:pb-24 text-center text-xs font-mono text-paper-muted flex items-center justify-between max-w-6xl mx-auto w-full">
     <span>Dica: Use as teclas <kbd
         class="px-1.5 py-0.5 rounded bg-paper-900 border border-paper-border text-slate-300">←</kbd> e <kbd
         class="px-1.5 py-0.5 rounded bg-paper-900 border border-paper-border text-slate-300">→</kbd> para navegar
@@ -1070,37 +1533,828 @@
        MOTOR DA APRESENTAÇÃO (VANILLA JAVASCRIPT)
        ====================================================================== -->
   <script>
-    // ------------------------------------------------------------------------
-    // Metadados das 18 Cenas para o Sumário e Navegação
-    // ------------------------------------------------------------------------
+    // ========================================================================
+    // METADADOS DAS 18 CENAS DA APRESENTAÇÃO
+    // ========================================================================
     const scenesMeta = [
-      { id: 'scene-0', title: 'Cena 01 • O Incidente', desc: 'A rede começa a mudar silenciosamente' },
-      { id: 'scene-1', title: 'Cena 02 • A Pergunta', desc: 'Como um nó coloca todos em risco?' },
-      { id: 'scene-2', title: 'Cena 03 • O Conceito', desc: 'A equação de autonomia do Worm' },
-      { id: 'scene-3', title: 'Cena 04 • O Diferencial', desc: 'Vírus vs Worm vs Trojan' },
-      { id: 'scene-4', title: 'Cena 05 • Linha do Tempo', desc: 'De laboratório à escala mundial' },
-      { id: 'scene-5', title: 'Cena 06 • Creeper (1971)', desc: 'O pioneiro da auto-replicação na ARPANET' },
-      { id: 'scene-6', title: 'Cena 07 • Reaper (1972)', desc: 'O primeiro caçador de malware' },
-      { id: 'scene-7', title: 'Cena 08 • Morris Worm (1988)', desc: 'Sobrecarga sem apagar arquivos' },
-      { id: 'scene-8', title: 'Cena 09 • Ciclo de Vida', desc: 'As 6 fases contínuas da replicação' },
-      { id: 'scene-9', title: 'Cena 10 • Descoberta e Port Scanning', desc: 'A varredura metodológica de portas' },
-      { id: 'scene-10', title: 'Cena 11 • A Cadeia de Exposição', desc: 'Computador, serviço, comunicação e falha' },
-      { id: 'scene-11', title: 'Cena 12 • A Vulnerabilidade', desc: 'Analogia da porta trancada vs fechadura com folga' },
-      { id: 'scene-12', title: 'Cena 13 • O Comprometimento', desc: 'Fluxo lógico de sucesso da invasão' },
-      { id: 'scene-13', title: 'Cena 14 • O Efeito Cascata', desc: 'A infecta B, que infectam C e D' },
-      { id: 'scene-14', title: 'Cena 15 • A Matemática da Explosão', desc: 'A equação N(t) = N0 * r^t' },
-      { id: 'scene-15', title: 'Cena 16 • Tipos de Impacto', desc: 'Botnets, DDoS, Banda e Ransomware' },
-      { id: 'scene-16', title: 'Cena 17 • Defesa em Profundidade', desc: 'As 4 camadas de proteção' },
-      { id: 'scene-17', title: 'Cena 18 • Síntese Final', desc: 'O olhar revelado' }
+      { id: 'scene-0', title: 'Cena 01 • O Incidente', desc: 'A rede começa a mudar silenciosamente', infection: 0.12 },
+      { id: 'scene-1', title: 'Cena 02 • A Pergunta', desc: 'Como um nó coloca todos em risco?', infection: 0.14 },
+      { id: 'scene-2', title: 'Cena 03 • O Conceito', desc: 'A equação de autonomia do Worm', infection: 0.15 },
+      { id: 'scene-3', title: 'Cena 04 • O Diferencial', desc: 'Vírus vs Worm vs Trojan', infection: 0.16 },
+      { id: 'scene-4', title: 'Cena 05 • Linha do Tempo', desc: 'De laboratório à escala mundial', infection: 0.22 },
+      { id: 'scene-5', title: 'Cena 06 • Creeper (1971)', desc: 'O pioneiro da auto-replicação na ARPANET', infection: 0.25 },
+      { id: 'scene-6', title: 'Cena 07 • Reaper (1972)', desc: 'O primeiro caçador de malware', infection: 0.22 },
+      { id: 'scene-7', title: 'Cena 08 • Morris Worm (1988)', desc: 'Sobrecarga sem apagar arquivos', infection: 0.30 },
+      { id: 'scene-8', title: 'Cena 09 • Ciclo de Vida', desc: 'As 6 fases contínuas da replicação', infection: 0.38 },
+      { id: 'scene-9', title: 'Cena 10 • Descoberta e Port Scanning', desc: 'A varredura metodológica de portas', infection: 0.45 },
+      { id: 'scene-10', title: 'Cena 11 • A Cadeia de Exposição', desc: 'Computador, serviço, comunicação e falha', infection: 0.50 },
+      { id: 'scene-11', title: 'Cena 12 • A Vulnerabilidade', desc: 'Analogia da porta trancada vs fechadura com folga', infection: 0.60 },
+      { id: 'scene-12', title: 'Cena 13 • O Comprometimento', desc: 'Fluxo lógico de sucesso da invasão', infection: 0.70 },
+      { id: 'scene-13', title: 'Cena 14 • O Efeito Cascata', desc: 'A infecta B, que infectam C e D', infection: 0.80 },
+      { id: 'scene-14', title: 'Cena 15 • A Matemática da Explosão', desc: 'A equação N(t) = N0 * r^t', infection: 0.88 },
+      { id: 'scene-15', title: 'Cena 16 • Tipos de Impacto', desc: 'Botnets, DDoS, Banda e Ransomware', infection: 0.94 },
+      { id: 'scene-16', title: 'Cena 17 • Defesa em Profundidade', desc: 'As 4 camadas de proteção', infection: 0.10 },
+      { id: 'scene-17', title: 'Cena 18 • Agradecimentos', desc: 'Obrigado pela atenção!', infection: 0.03 }
     ];
 
     let currentSceneIdx = 0;
 
-    // ------------------------------------------------------------------------
-    // Funções de Navegação Fluida (Sem Bloqueio)
-    // ------------------------------------------------------------------------
-    function updateSceneView() {
-      // Oculta todas as cenas e exibe apenas a atual
+    // ========================================================================
+    // MOTOR DE REDE PERSISTENTE E VISUALIZAÇÃO AMBIENTAL (NETWORK ENGINE)
+    // ========================================================================
+    class NetworkEngine {
+      constructor(canvasId) {
+        this.canvas = document.getElementById(canvasId);
+        if (!this.canvas) return;
+        this.ctx = this.canvas.getContext('2d');
+
+        // Estado Global de Infecção e Atividade
+        this.targetInfectionLevel = 0.12;
+        this.currentInfectionLevel = 0.12;
+        this.reproductionRate = 1.4; // Multiplicador dinâmico de taxa
+
+        // Camadas de Defesa Ativas
+        this.defenses = {
+          segmentation: true,
+          patching: true,
+          firewall: true,
+          monitoring: true
+        };
+
+        // Paleta Semântica Oficial
+        this.PALETTE = {
+          CYAN: [56, 189, 248],     // #38bdf8 - Saudável / Normal
+          AMBER: [251, 191, 36],    // #fbbf24 - Sonda / Vulnerável
+          CORAL: [244, 63, 94],     // #f43f5e - Infectado / Crítico
+          EMERALD: [16, 185, 129]   // #10b981 - Protegido / Defesa
+        };
+
+        // Topologia e Partículas
+        this.nodes = [];
+        this.edges = [];
+        this.packets = [];
+        this.interceptSparks = [];
+
+        // Controle Parallax e Redução de Movimento
+        this.mouseX = 0;
+        this.mouseY = 0;
+        this.parallaxX = 0;
+        this.parallaxY = 0;
+        this.reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+        // Timers
+        this.lastPacketTime = 0;
+        this.lastFrameTime = performance.now();
+
+        this.init();
+      }
+
+      init() {
+        this.resize();
+        window.addEventListener('resize', () => this.resize());
+
+        window.addEventListener('mousemove', (e) => {
+          this.mouseX = e.clientX;
+          this.mouseY = e.clientY;
+        });
+
+        // Inicializa Topologia em 4 Sub-redes/Clusters
+        this.buildTopology();
+
+        // Loop de Renderização a 60 FPS
+        requestAnimationFrame((t) => this.renderLoop(t));
+      }
+
+      resize() {
+        const dpr = Math.min(window.devicePixelRatio || 1, 2);
+        this.width = window.innerWidth;
+        this.height = window.innerHeight;
+        this.canvas.width = this.width * dpr;
+        this.canvas.height = this.height * dpr;
+        this.ctx.setTransform(1, 0, 0, 1, 0, 0);
+        this.ctx.scale(dpr, dpr);
+
+        if (this.nodes.length > 0) {
+          this.updateNodePositions();
+        }
+      }
+
+      buildTopology() {
+        this.nodes = [];
+        this.edges = [];
+        const totalNodes = 52;
+        const clusters = [
+          { cx: this.width * 0.25, cy: this.height * 0.30 }, // Subnet A
+          { cx: this.width * 0.75, cy: this.height * 0.30 }, // Subnet B
+          { cx: this.width * 0.25, cy: this.height * 0.75 }, // Subnet C
+          { cx: this.width * 0.75, cy: this.height * 0.75 }  // Subnet D
+        ];
+
+        for (let i = 0; i < totalNodes; i++) {
+          const clusterIdx = i % 4;
+          const center = clusters[clusterIdx];
+          const angle = Math.random() * Math.PI * 2;
+          const dist = 30 + Math.random() * (Math.min(this.width, this.height) * 0.22);
+          const x = Math.max(40, Math.min(this.width - 40, center.cx + Math.cos(angle) * dist));
+          const y = Math.max(40, Math.min(this.height - 40, center.cy + Math.sin(angle) * dist));
+
+          this.nodes.push({
+            id: i,
+            cluster: clusterIdx,
+            x: x,
+            y: y,
+            baseX: x,
+            baseY: y,
+            radius: 2.8 + Math.random() * 1.6,
+            floatSpeed: 0.0007 + Math.random() * 0.0009,
+            floatPhaseX: Math.random() * Math.PI * 2,
+            floatPhaseY: Math.random() * Math.PI * 2,
+            floatAmpX: 7 + Math.random() * 8,
+            floatAmpY: 6 + Math.random() * 7,
+            state: 'healthy',
+            targetColor: [...this.PALETTE.CYAN],
+            color: [...this.PALETTE.CYAN],
+            pulseRadius: 0,
+            pulseAlpha: 0,
+            monitored: false
+          });
+        }
+
+        // Construir Conexões (Arestas de Rede)
+        const maxDist = Math.min(this.width, this.height) * 0.22;
+        for (let i = 0; i < totalNodes; i++) {
+          for (let j = i + 1; j < totalNodes; j++) {
+            const na = this.nodes[i];
+            const nb = this.nodes[j];
+            const dx = na.x - nb.x;
+            const dy = na.y - nb.y;
+            const d = Math.sqrt(dx * dx + dy * dy);
+
+            // Arestas intra-cluster ou pontes controladas entre subnets
+            const sameCluster = (na.cluster === nb.cluster);
+            if ((sameCluster && d < maxDist) || (!sameCluster && d < maxDist * 0.9 && Math.random() < 0.25)) {
+              this.edges.push({
+                nodeA: na,
+                nodeB: nb,
+                isCrossCluster: !sameCluster,
+                dist: d
+              });
+            }
+          }
+        }
+
+        // Aplica infecção inicial orgânica e calma (10-15%)
+        this.syncInfectionTargets();
+      }
+
+      updateNodePositions() {
+        const clusters = [
+          { cx: this.width * 0.25, cy: this.height * 0.30 },
+          { cx: this.width * 0.75, cy: this.height * 0.30 },
+          { cx: this.width * 0.25, cy: this.height * 0.75 },
+          { cx: this.width * 0.75, cy: this.height * 0.75 }
+        ];
+
+        this.nodes.forEach((n, idx) => {
+          const clusterIdx = n.cluster;
+          const center = clusters[clusterIdx];
+          const angle = (idx / this.nodes.length) * Math.PI * 2;
+          const dist = 30 + (idx % 5) * 20;
+          n.baseX = Math.max(40, Math.min(this.width - 40, center.cx + Math.cos(angle) * dist));
+          n.baseY = Math.max(40, Math.min(this.height - 40, center.cy + Math.sin(angle) * dist));
+        });
+      }
+
+      setScene(sceneIdx) {
+        const meta = scenesMeta[sceneIdx];
+        if (!meta) return;
+
+        // Na Cena 17, o nível é governado pelas camadas de defesa
+        if (sceneIdx === 16) {
+          this.recalculateDefenseInfection();
+        } else if (sceneIdx === 17) {
+          // Cena 18: rede 100% estabilizada, calma e pacífica
+          this.targetInfectionLevel = 0.02;
+          this.nodes.forEach(n => {
+            n.state = 'healthy';
+            n.targetColor = [...this.PALETTE.CYAN];
+            n.pulseAlpha = 0;
+            n.pulseRadius = 0;
+          });
+        } else {
+          this.targetInfectionLevel = meta.infection;
+        }
+
+        // Ajusta sutilmente a atmosfera de monitoramento
+        this.syncAmbientBlobs();
+      }
+
+      syncInfectionTargets() {
+        const targetInfectedCount = Math.round(this.nodes.length * this.currentInfectionLevel);
+        let currentlyInfected = this.nodes.filter(n => n.state === 'infected' || n.state === 'vulnerable');
+
+        if (currentlyInfected.length < targetInfectedCount) {
+          const toAdd = targetInfectedCount - currentlyInfected.length;
+          const healthy = this.nodes.filter(n => n.state === 'healthy');
+          for (let i = 0; i < Math.min(toAdd, healthy.length); i++) {
+            const victim = healthy[i];
+            victim.state = 'vulnerable';
+            victim.targetColor = [...this.PALETTE.AMBER];
+            setTimeout(() => {
+              if (victim.state === 'vulnerable') {
+                victim.state = 'infected';
+                victim.targetColor = [...this.PALETTE.CORAL];
+                victim.pulseRadius = 3;
+                victim.pulseAlpha = 0.8;
+              }
+            }, 350 + Math.random() * 400);
+          }
+        } else if (currentlyInfected.length > targetInfectedCount) {
+          const toRemove = currentlyInfected.length - targetInfectedCount;
+          for (let i = 0; i < Math.min(toRemove, currentlyInfected.length); i++) {
+            const healed = currentlyInfected[i];
+            healed.state = 'healthy';
+            healed.targetColor = (this.defenses.patching && currentSceneIdx === 16) ? [...this.PALETTE.EMERALD] : [...this.PALETTE.CYAN];
+          }
+        }
+      }
+
+      setReproductionRate(r) {
+        this.reproductionRate = r;
+      }
+
+      setDefenseState(defenses) {
+        this.defenses = defenses;
+
+        // Se Patching estiver ativo: cura os infectados progressivamente (CORAL -> AMBER -> CYAN -> EMERALD)
+        if (defenses.patching) {
+          this.nodes.forEach(n => {
+            if (n.state === 'infected' || n.state === 'vulnerable') {
+              n.state = 'protected';
+              n.targetColor = [...this.PALETTE.EMERALD];
+              n.pulseRadius = 4;
+              n.pulseAlpha = 0.9;
+            }
+          });
+        }
+
+        this.recalculateDefenseInfection();
+        this.syncAmbientBlobs();
+      }
+
+      recalculateDefenseInfection() {
+        const activeCount = Object.values(this.defenses).filter(Boolean).length;
+        if (activeCount === 4) {
+          this.targetInfectionLevel = 0.06; // 100% Protegido
+        } else if (activeCount === 3) {
+          this.targetInfectionLevel = 0.25;
+        } else if (activeCount === 2) {
+          this.targetInfectionLevel = 0.50;
+        } else if (activeCount === 1) {
+          this.targetInfectionLevel = 0.75;
+        } else {
+          this.targetInfectionLevel = 0.95; // Crítico
+        }
+      }
+
+      // Triggers de Interações Específicas
+      triggerHistoricalPulse(era) {
+        if (this.edges.length === 0) return;
+        const count = era === 2 ? 8 : (era === 3 ? 5 : 2);
+        for (let i = 0; i < count; i++) {
+          const edge = this.edges[Math.floor(Math.random() * this.edges.length)];
+          this.spawnPacket(edge.nodeA, edge.nodeB, era === 1 ? 'defense' : 'infectious');
+        }
+      }
+
+      triggerCreeperJump() {
+        if (this.nodes.length < 2) return;
+        const nA = this.nodes[0];
+        const nB = this.nodes[1];
+        this.spawnPacket(nA, nB, 'infectious');
+        nA.pulseRadius = 4;
+        nA.pulseAlpha = 0.9;
+      }
+
+      triggerMorrisRipple() {
+        this.nodes.slice(0, 15).forEach((n, idx) => {
+          setTimeout(() => {
+            n.pulseRadius = 4;
+            n.pulseAlpha = 0.95;
+            const connectedEdges = this.edges.filter(e => e.nodeA === n || e.nodeB === n);
+            if (connectedEdges.length > 0) {
+              const e = connectedEdges[0];
+              const dest = e.nodeA === n ? e.nodeB : e.nodeA;
+              this.spawnPacket(n, dest, 'infectious');
+            }
+          }, idx * 60);
+        });
+      }
+
+      triggerPortScanWave() {
+        const scannerCluster = this.nodes.filter(n => n.cluster === 0);
+        const targetCluster = this.nodes.filter(n => n.cluster === 1);
+        if (scannerCluster.length === 0 || targetCluster.length === 0) return;
+
+        scannerCluster.slice(0, 4).forEach((src, idx) => {
+          setTimeout(() => {
+            const dest = targetCluster[idx % targetCluster.length];
+            this.spawnPacket(src, dest, 'healthy');
+            src.pulseRadius = 3;
+            src.pulseAlpha = 0.8;
+          }, idx * 80);
+        });
+      }
+
+      triggerCascadeStep(step) {
+        const count = Math.min(Math.pow(2, step), this.nodes.length);
+        const candidates = this.nodes.slice(0, count);
+        candidates.forEach((n, idx) => {
+          setTimeout(() => {
+            n.state = 'infected';
+            n.targetColor = [...this.PALETTE.CORAL];
+            n.pulseRadius = 4;
+            n.pulseAlpha = 0.9;
+
+            const edges = this.edges.filter(e => e.nodeA === n || e.nodeB === n);
+            if (edges.length > 0) {
+              const e = edges[Math.floor(Math.random() * edges.length)];
+              const dest = e.nodeA === n ? e.nodeB : e.nodeA;
+              this.spawnPacket(n, dest, 'infectious');
+            }
+          }, idx * 45);
+        });
+      }
+
+      spawnPacket(fromNode, toNode, type) {
+        if (!fromNode || !toNode || this.packets.length > 45) return;
+        let color = 'rgba(56, 189, 248, 0.7)';
+        if (type === 'infectious') {
+          color = 'rgba(244, 63, 94, 0.95)';
+        } else if (type === 'defense') {
+          color = 'rgba(16, 185, 129, 0.95)';
+        }
+
+        const baseSpeed = (currentSceneIdx === 17 ? 0.007 : 0.016) * (this.reducedMotion ? 0.3 : 1);
+        this.packets.push({
+          fromNode,
+          toNode,
+          progress: 0,
+          speed: baseSpeed * this.reproductionRate,
+          type,
+          color
+        });
+      }
+
+      syncAmbientBlobs() {
+        const bCoral = document.getElementById('ambientBlob2');
+        const bEmerald = document.getElementById('ambientBlob3');
+        if (bCoral) {
+          bCoral.style.opacity = Math.max(0.12, Math.min(0.85, this.currentInfectionLevel * 0.9));
+        }
+        if (bEmerald) {
+          bEmerald.style.opacity = (currentSceneIdx === 16 && this.defenses.patching) ? '0.65' : (currentSceneIdx === 17 ? '0.35' : '0.0');
+        }
+      }
+
+      updateTelemetryHUD() {
+        const txtIndex = document.getElementById('telemetryInfectionIndex');
+        const txtLatency = document.getElementById('telemetryLatency');
+        const txtStatus = document.getElementById('telemetryStatusText');
+        const dotStatus = document.getElementById('telemetryStatusDot');
+        if (!txtIndex) return;
+
+        const pct = Math.round(this.currentInfectionLevel * 100);
+        txtIndex.innerText = `${pct}%`;
+
+        // Cálculo de latência proporcional à sobrecarga
+        const lat = Math.round(12 + (this.currentInfectionLevel * this.currentInfectionLevel) * 180);
+        if (txtLatency) txtLatency.innerText = `${lat}ms`;
+
+        if (txtStatus && dotStatus) {
+          if (pct >= 85) {
+            txtStatus.innerText = 'SOBRECARGA CRÍTICA DE PACOTES';
+            txtStatus.className = 'text-paper-coral font-bold';
+            dotStatus.className = 'w-2 h-2 rounded-full bg-paper-coral animate-ping';
+          } else if (pct >= 50) {
+            txtStatus.innerText = 'PROPAGAÇÃO MULTIVETORIAL ATIVA';
+            txtStatus.className = 'text-rose-300 font-medium';
+            dotStatus.className = 'w-2 h-2 rounded-full bg-paper-coral animate-pulse';
+          } else if (pct >= 25) {
+            txtStatus.innerText = 'VARREDURA LATERAL DETECTADA';
+            txtStatus.className = 'text-amber-300 font-medium';
+            dotStatus.className = 'w-2 h-2 rounded-full bg-amber-400';
+          } else if (currentSceneIdx === 16 && this.defenses.patching) {
+            txtStatus.innerText = 'ARQUITETURA DEFENSIVA ATIVA';
+            txtStatus.className = 'text-emerald-300 font-medium';
+            dotStatus.className = 'w-2 h-2 rounded-full bg-emerald-400';
+          } else if (currentSceneIdx === 17) {
+            txtStatus.innerText = 'APRESENTAÇÃO CONCLUÍDA';
+            txtStatus.className = 'text-sky-300 font-medium';
+            dotStatus.className = 'w-2 h-2 rounded-full bg-sky-400';
+          } else {
+            txtStatus.innerText = 'ESTADO: NOMINAL';
+            txtStatus.className = 'text-slate-300 font-medium';
+            dotStatus.className = 'w-2 h-2 rounded-full bg-sky-400 animate-pulse';
+          }
+        }
+      }
+
+      // Loop de Animação Principal
+      renderLoop(now) {
+        const dt = (now - this.lastFrameTime) * 0.001;
+        this.lastFrameTime = now;
+
+        // Interpolação fluida do nível de infecção (Narrativa contínua)
+        this.currentInfectionLevel += (this.targetInfectionLevel - this.currentInfectionLevel) * 0.035;
+
+        // Atualização Periódica de Telemetria e Alvos de Infecção
+        this.syncInfectionTargets();
+        this.updateTelemetryHUD();
+
+        // Parallax suave
+        const targetPX = (this.mouseX - this.width / 2) * 0.012;
+        const targetPY = (this.mouseY - this.height / 2) * 0.012;
+        this.parallaxX += (targetPX - this.parallaxX) * 0.05;
+        this.parallaxY += (targetPY - this.parallaxY) * 0.05;
+
+        // Geração autônoma de pacotes conforme a taxa de infecção (calma na cena 18)
+        const baseInterval = currentSceneIdx === 17 ? 3500 : (1400 / (1 + this.currentInfectionLevel * 3));
+        const packetInterval = Math.max(120, baseInterval / this.reproductionRate);
+        if (now - this.lastPacketTime > packetInterval && this.edges.length > 0) {
+          this.lastPacketTime = now;
+          const e = this.edges[Math.floor(Math.random() * this.edges.length)];
+          const from = Math.random() < 0.5 ? e.nodeA : e.nodeB;
+          const to = from === e.nodeA ? e.nodeB : e.nodeA;
+          const pType = from.state === 'infected' ? 'infectious' : (from.state === 'protected' ? 'defense' : 'healthy');
+          this.spawnPacket(from, to, pType);
+        }
+
+        // Limpeza do Canvas
+        this.ctx.clearRect(0, 0, this.width, this.height);
+
+        // Atualização e Renderização das Arestas
+        this.drawEdges(now);
+
+        // Atualização e Renderização dos Pacotes em Trânsito
+        this.drawPackets();
+
+        // Faíscas de Interceptação do Firewall
+        this.drawSparks();
+
+        // Atualização e Renderização dos Nós
+        this.drawNodes(now);
+
+        requestAnimationFrame((t) => this.renderLoop(t));
+      }
+
+      drawEdges(now) {
+        for (let i = 0; i < this.edges.length; i++) {
+          const edge = this.edges[i];
+
+          // Segmentação de Rede Ativa: Corta fisicamente conexões inter-clusters!
+          if (this.defenses.segmentation && edge.isCrossCluster) {
+            continue;
+          }
+
+          const a = edge.nodeA;
+          const b = edge.nodeB;
+          const ax = a.x + this.parallaxX;
+          const ay = a.y + this.parallaxY;
+          const bx = b.x + this.parallaxX;
+          const by = b.y + this.parallaxY;
+
+          this.ctx.beginPath();
+          this.ctx.moveTo(ax, ay);
+          this.ctx.lineTo(bx, by);
+
+          let alpha = 0.10;
+          if (a.state === 'infected' || b.state === 'infected') {
+            alpha = 0.22;
+          }
+          const r = Math.round((a.color[0] + b.color[0]) * 0.5);
+          const g = Math.round((a.color[1] + b.color[1]) * 0.5);
+          const bl = Math.round((a.color[2] + b.color[2]) * 0.5);
+
+          this.ctx.strokeStyle = `rgba(${r}, ${g}, ${bl}, ${alpha})`;
+          this.ctx.lineWidth = 1.0;
+          this.ctx.stroke();
+        }
+      }
+
+      drawPackets() {
+        for (let i = this.packets.length - 1; i >= 0; i--) {
+          const p = this.packets[i];
+          p.progress += p.speed;
+
+          // Verificação de Interceptação por Firewall ao cruzar sub-redes
+          if (this.defenses.firewall && p.type === 'infectious' && p.fromNode.cluster !== p.toNode.cluster && p.progress > 0.45 && p.progress < 0.55) {
+            // Interceptado!
+            const ax = p.fromNode.x + this.parallaxX;
+            const ay = p.fromNode.y + this.parallaxY;
+            const bx = p.toNode.x + this.parallaxX;
+            const by = p.toNode.y + this.parallaxY;
+            this.interceptSparks.push({
+              x: ax + (bx - ax) * 0.5,
+              y: ay + (by - ay) * 0.5,
+              life: 1.0
+            });
+            this.packets.splice(i, 1);
+            continue;
+          }
+
+          if (p.progress >= 1.0) {
+            // Chegada do pacote ao alvo: transmissão de contágio ou defesa
+            const target = p.toNode;
+            if (p.type === 'infectious') {
+              if (target.state === 'healthy') {
+                target.state = 'vulnerable';
+                target.targetColor = [...this.PALETTE.AMBER];
+                target.pulseRadius = 3;
+                target.pulseAlpha = 0.7;
+              }
+            } else if (p.type === 'defense') {
+              if (target.state === 'infected' || target.state === 'vulnerable') {
+                target.state = 'protected';
+                target.targetColor = [...this.PALETTE.EMERALD];
+                target.pulseRadius = 4;
+                target.pulseAlpha = 0.8;
+              }
+            }
+            this.packets.splice(i, 1);
+            continue;
+          }
+
+          const ax = p.fromNode.x + this.parallaxX;
+          const ay = p.fromNode.y + this.parallaxY;
+          const bx = p.toNode.x + this.parallaxX;
+          const by = p.toNode.y + this.parallaxY;
+          const px = ax + (bx - ax) * p.progress;
+          const py = ay + (by - ay) * p.progress;
+
+          this.ctx.beginPath();
+          this.ctx.arc(px, py, 2.2, 0, Math.PI * 2);
+          this.ctx.fillStyle = p.color;
+          this.ctx.fill();
+        }
+      }
+
+      drawSparks() {
+        for (let i = this.interceptSparks.length - 1; i >= 0; i--) {
+          const s = this.interceptSparks[i];
+          s.life -= 0.06;
+          if (s.life <= 0) {
+            this.interceptSparks.splice(i, 1);
+            continue;
+          }
+
+          this.ctx.beginPath();
+          this.ctx.arc(s.x, s.y, (1 - s.life) * 14, 0, Math.PI * 2);
+          this.ctx.strokeStyle = `rgba(56, 189, 248, ${s.life * 0.8})`;
+          this.ctx.lineWidth = 1.5;
+          this.ctx.stroke();
+        }
+      }
+
+      drawNodes(now) {
+        for (let i = 0; i < this.nodes.length; i++) {
+          const n = this.nodes[i];
+
+          // Flutuação orgânica desincronizada
+          if (!this.reducedMotion) {
+            n.x = n.baseX + Math.sin(now * n.floatSpeed + n.floatPhaseX) * n.floatAmpX;
+            n.y = n.baseY + Math.cos(now * n.floatSpeed + n.floatPhaseY) * n.floatAmpY;
+          }
+
+          // Transição de Cor Suave (Contágio contínuo e sem saltos)
+          n.color[0] += (n.targetColor[0] - n.color[0]) * 0.08;
+          n.color[1] += (n.targetColor[1] - n.color[1]) * 0.08;
+          n.color[2] += (n.targetColor[2] - n.color[2]) * 0.08;
+
+          const nx = n.x + this.parallaxX;
+          const ny = n.y + this.parallaxY;
+
+          // Anel de pulso expansivo
+          if (n.pulseAlpha > 0.01) {
+            n.pulseRadius += 0.45;
+            n.pulseAlpha -= 0.02;
+            this.ctx.beginPath();
+            this.ctx.arc(nx, ny, n.pulseRadius, 0, Math.PI * 2);
+            this.ctx.strokeStyle = `rgba(${Math.round(n.color[0])}, ${Math.round(n.color[1])}, ${Math.round(n.color[2])}, ${n.pulseAlpha})`;
+            this.ctx.lineWidth = 1.2;
+            this.ctx.stroke();
+          }
+
+          // Halo difuso suave
+          this.ctx.beginPath();
+          this.ctx.arc(nx, ny, n.radius * 2.2, 0, Math.PI * 2);
+          this.ctx.fillStyle = `rgba(${Math.round(n.color[0])}, ${Math.round(n.color[1])}, ${Math.round(n.color[2])}, 0.09)`;
+          this.ctx.fill();
+
+          // Ponto Central do Nó
+          this.ctx.beginPath();
+          this.ctx.arc(nx, ny, n.radius, 0, Math.PI * 2);
+          this.ctx.fillStyle = `rgb(${Math.round(n.color[0])}, ${Math.round(n.color[1])}, ${Math.round(n.color[2])})`;
+          this.ctx.fill();
+
+          // Retícula de Monitoramento (se Defesa de Monitoramento estiver ativa e nó for anômalo)
+          if (this.defenses.monitoring && (n.state === 'infected' || n.state === 'vulnerable')) {
+            const b = n.radius + 5;
+            this.ctx.strokeStyle = 'rgba(251, 191, 36, 0.65)';
+            this.ctx.lineWidth = 1;
+            // 4 Cantos de Miramento
+            this.ctx.strokeRect(nx - b, ny - b, b * 2, b * 2);
+          }
+        }
+      }
+    }
+
+    // Instanciação Global do Motor de Rede e Áudio
+    let networkEngine = null;
+    let soundSystem = null;
+
+    // ========================================================================
+    // SISTEMA DE ÁUDIO DISCRETO E PROGRAMÁTICO (WEB AUDIO API)
+    // 100% Autocontido, Sem arquivos externos, Volume sutil de apresentação
+    // ========================================================================
+    class SoundSystem {
+      constructor() {
+        this.ctx = null;
+        this.enabled = true;
+        this.unlocked = false;
+        this.ambientGain = null;
+        this.ambientOsc1 = null;
+        this.ambientOsc2 = null;
+      }
+
+      initContext() {
+        if (!this.ctx) {
+          const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+          if (AudioContextClass) {
+            this.ctx = new AudioContextClass();
+          }
+        }
+        if (this.ctx && this.ctx.state === 'suspended') {
+          this.ctx.resume();
+        }
+        this.unlocked = true;
+      }
+
+      toggle() {
+        this.initContext();
+        this.enabled = !this.enabled;
+        if (this.ambientGain && this.ctx) {
+          this.ambientGain.gain.setValueAtTime(this.enabled ? 0.002 : 0, this.ctx.currentTime);
+        }
+        return this.enabled;
+      }
+
+      // Som sutil de avanço de slide (pulso digital ascendente suave: ~460Hz -> 680Hz, 120ms)
+      playSlideNext() {
+        if (!this.enabled) return;
+        this.initContext();
+        if (!this.ctx) return;
+
+        try {
+          const now = this.ctx.currentTime;
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(460, now);
+          osc.frequency.exponentialRampToValueAtTime(680, now + 0.12);
+
+          // Envelope suave: fade-in rápido (15ms), fade-out suave (105ms)
+          gain.gain.setValueAtTime(0.0001, now);
+          gain.gain.linearRampToValueAtTime(0.045, now + 0.015);
+          gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.13);
+
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+
+          osc.start(now);
+          osc.stop(now + 0.14);
+        } catch (e) {}
+      }
+
+      // Som sutil de retorno de slide (pulso digital descendente suave: ~540Hz -> 360Hz, 120ms)
+      playSlidePrev() {
+        if (!this.enabled) return;
+        this.initContext();
+        if (!this.ctx) return;
+
+        try {
+          const now = this.ctx.currentTime;
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(540, now);
+          osc.frequency.exponentialRampToValueAtTime(360, now + 0.12);
+
+          gain.gain.setValueAtTime(0.0001, now);
+          gain.gain.linearRampToValueAtTime(0.035, now + 0.015);
+          gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.13);
+
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+
+          osc.start(now);
+          osc.stop(now + 0.14);
+        } catch (e) {}
+      }
+
+      // Micro clique suave de feedback táctil para botões interativos internos do slide
+      playInteraction() {
+        if (!this.enabled) return;
+        this.initContext();
+        if (!this.ctx) return;
+
+        try {
+          const now = this.ctx.currentTime;
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(780, now);
+          osc.frequency.exponentialRampToValueAtTime(940, now + 0.04);
+
+          gain.gain.setValueAtTime(0.0001, now);
+          gain.gain.linearRampToValueAtTime(0.025, now + 0.008);
+          gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.045);
+
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+
+          osc.start(now);
+          osc.stop(now + 0.05);
+        } catch (e) {}
+      }
+
+      // Zumbido ambiente quase imperceptível de atmosfera de rede
+      startAmbientHum() {
+        if (!this.enabled || this.ambientOsc1) return;
+        this.initContext();
+        if (!this.ctx) return;
+
+        try {
+          const now = this.ctx.currentTime;
+          this.ambientGain = this.ctx.createGain();
+          this.ambientGain.gain.setValueAtTime(0.002, now);
+
+          const filter = this.ctx.createBiquadFilter();
+          filter.type = 'lowpass';
+          filter.frequency.setValueAtTime(140, now);
+
+          this.ambientOsc1 = this.ctx.createOscillator();
+          this.ambientOsc1.type = 'sine';
+          this.ambientOsc1.frequency.setValueAtTime(55, now);
+
+          this.ambientOsc2 = this.ctx.createOscillator();
+          this.ambientOsc2.type = 'sine';
+          this.ambientOsc2.frequency.setValueAtTime(110, now);
+
+          this.ambientOsc1.connect(filter);
+          this.ambientOsc2.connect(filter);
+          filter.connect(this.ambientGain);
+          this.ambientGain.connect(this.ctx.destination);
+
+          this.ambientOsc1.start();
+          this.ambientOsc2.start();
+        } catch (e) {}
+      }
+    }
+
+    // Controle de Transição e Debounce (Evita saltos múltiplos acidentais)
+    let isTransitioning = false;
+    const TRANSITION_LOCK_MS = 280;
+
+    // Hint Automático no Primeiro Slide
+    let hintDismissed = false;
+    function dismissAutoHint() {
+      if (hintDismissed) return;
+      hintDismissed = true;
+      const hint = document.getElementById('navigationAutoHint');
+      if (hint) {
+        hint.style.opacity = '0';
+        hint.style.transform = 'translate(-50%, 14px)';
+        setTimeout(() => { if (hint) hint.remove(); }, 600);
+      }
+    }
+    setTimeout(dismissAutoHint, 5200);
+
+    // ========================================================================
+    // NAVEGAÇÃO FLUIDA ENTRE CENAS (PERSISTÊNCIA TOTAL DE ESTADO)
+    // ========================================================================
+    function updateSceneView(direction = 'none') {
+      dismissAutoHint();
+
+      // Dispara som sutil de transição
+      if (soundSystem) {
+        if (direction === 'forward') soundSystem.playSlideNext();
+        else if (direction === 'backward') soundSystem.playSlidePrev();
+      }
+
       scenesMeta.forEach((meta, idx) => {
         const el = document.getElementById(meta.id);
         if (el) {
@@ -1112,71 +2366,183 @@
         }
       });
 
-      // Atualiza textos do topo
       const numStr = (currentSceneIdx + 1).toString().padStart(2, '0');
       const totalStr = scenesMeta.length.toString().padStart(2, '0');
-      document.getElementById('txtSceneIndicator').innerText = `Cena ${numStr} / ${totalStr}`;
+      const currentMeta = scenesMeta[currentSceneIdx];
 
-      // Atualiza botões
-      document.getElementById('btnPrevScene').disabled = (currentSceneIdx === 0);
-      document.getElementById('btnNextScene').disabled = (currentSceneIdx === scenesMeta.length - 1);
+      // Atualiza Indicador do Topo
+      const topIndicator = document.getElementById('txtSceneIndicator');
+      if (topIndicator) topIndicator.innerText = `Cena ${numStr} / ${totalStr}`;
 
-      // Atualiza barra de progresso
+      // Atualiza Indicadores do Dock Inferior
+      const dockNum = document.getElementById('dockSlideNumber');
+      if (dockNum) dockNum.innerText = `${numStr} / ${totalStr}`;
+
+      const dockTitle = document.getElementById('dockSlideTitle');
+      if (dockTitle && currentMeta) {
+        dockTitle.innerText = currentMeta.title.replace(/^Cena \d+ • /, '');
+      }
+
+      // Estados de desativação dos botões de navegação
+      const isFirst = (currentSceneIdx === 0);
+      const isLast = (currentSceneIdx === scenesMeta.length - 1);
+
+      const topPrev = document.getElementById('btnPrevScene');
+      const topNext = document.getElementById('btnNextScene');
+      if (topPrev) topPrev.disabled = isFirst;
+      if (topNext) topNext.disabled = isLast;
+
+      const dockPrev = document.getElementById('dockBtnPrev');
+      const dockNext = document.getElementById('dockBtnNext');
+      if (dockPrev) dockPrev.disabled = isFirst;
+      if (dockNext) dockNext.disabled = isLast;
+
       const pct = Math.round(((currentSceneIdx + 1) / scenesMeta.length) * 100);
-      document.getElementById('topProgressBar').style.width = `${pct}%`;
+      const prog = document.getElementById('topProgressBar');
+      if (prog) prog.style.width = `${pct}%`;
 
-      // Gatilhos específicos de cada cena ao entrar
+      // Atualiza o nível de infecção do motor persistente sem recriá-lo
+      if (networkEngine) {
+        networkEngine.setScene(currentSceneIdx);
+      }
+
       onSceneEnter(currentSceneIdx);
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     function nextScene() {
+      if (isTransitioning) return;
       if (currentSceneIdx < scenesMeta.length - 1) {
+        isTransitioning = true;
         currentSceneIdx++;
-        updateSceneView();
+        updateSceneView('forward');
+        setTimeout(() => { isTransitioning = false; }, TRANSITION_LOCK_MS);
       }
     }
 
     function prevScene() {
+      if (isTransitioning) return;
       if (currentSceneIdx > 0) {
+        isTransitioning = true;
         currentSceneIdx--;
-        updateSceneView();
+        updateSceneView('backward');
+        setTimeout(() => { isTransitioning = false; }, TRANSITION_LOCK_MS);
       }
     }
 
     function goToScene(idx) {
+      if (isTransitioning) return;
       if (idx >= 0 && idx < scenesMeta.length) {
+        isTransitioning = true;
+        const dir = idx > currentSceneIdx ? 'forward' : 'backward';
         currentSceneIdx = idx;
-        updateSceneView();
+        updateSceneView(dir);
         closeIndexDrawer();
+        setTimeout(() => { isTransitioning = false; }, TRANSITION_LOCK_MS);
       }
     }
 
-    // Navegação via Teclado (Setas Esquerda / Direita e Espaço)
+    // Alternar Som na Interface
+    function toggleSoundUI() {
+      if (!soundSystem) return;
+      const isEnabled = soundSystem.toggle();
+      const iconOn = document.getElementById('iconSoundOn');
+      const iconOff = document.getElementById('iconSoundOff');
+      const btn = document.getElementById('btnSoundToggle');
+
+      if (isEnabled) {
+        if (iconOn) iconOn.classList.remove('hidden');
+        if (iconOff) iconOff.classList.add('hidden');
+        if (btn) {
+          btn.setAttribute('title', 'Áudio da Apresentação: Ativado (Clique para mutar)');
+          btn.classList.remove('text-slate-500');
+          btn.classList.add('text-slate-400');
+        }
+      } else {
+        if (iconOn) iconOn.classList.add('hidden');
+        if (iconOff) iconOff.classList.remove('hidden');
+        if (btn) {
+          btn.setAttribute('title', 'Áudio da Apresentação: Mudo (Clique para ativar)');
+          btn.classList.remove('text-slate-400');
+          btn.classList.add('text-slate-500');
+        }
+      }
+    }
+
+    // Teclas de Atalho de Apresentação
     window.addEventListener('keydown', (e) => {
+      if (soundSystem) soundSystem.initContext();
+
       if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
 
-      if (e.key === 'ArrowRight' || e.key === ' ') {
+      if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') {
         e.preventDefault();
         nextScene();
-      } else if (e.key === 'ArrowLeft') {
+      } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
         e.preventDefault();
         prevScene();
+      } else if (e.key === 'Home') {
+        e.preventDefault();
+        goToScene(0);
+      } else if (e.key === 'End') {
+        e.preventDefault();
+        goToScene(scenesMeta.length - 1);
       } else if (e.key === 'Escape') {
         closeIndexDrawer();
+      } else if (e.key === 'm' || e.key === 'M') {
+        toggleSoundUI();
       }
     });
 
-    // ------------------------------------------------------------------------
-    // Gaveta de Sumário / Índice
-    // ------------------------------------------------------------------------
+    // Suporte a Toque / Gesto Swipe em Telas Touch
+    let touchStartX = 0;
+    let touchStartY = 0;
+    let touchStartTime = 0;
+
+    window.addEventListener('touchstart', (e) => {
+      if (soundSystem) soundSystem.initContext();
+      const target = e.target;
+      if (target.closest('button') || target.closest('input') || target.closest('#indexDrawer')) return;
+      touchStartX = e.changedTouches[0].screenX;
+      touchStartY = e.changedTouches[0].screenY;
+      touchStartTime = Date.now();
+    }, { passive: true });
+
+    window.addEventListener('touchend', (e) => {
+      const target = e.target;
+      if (target.closest('button') || target.closest('input') || target.closest('#indexDrawer')) return;
+      const touchEndX = e.changedTouches[0].screenX;
+      const touchEndY = e.changedTouches[0].screenY;
+      const dx = touchEndX - touchStartX;
+      const dy = touchEndY - touchStartY;
+      const dt = Date.now() - touchStartTime;
+
+      if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.5 && dt < 500) {
+        if (dx < 0) {
+          nextScene();
+        } else {
+          prevScene();
+        }
+      }
+    }, { passive: true });
+
+    // Desbloqueio do contexto de áudio no primeiro clique do usuário
+    window.addEventListener('pointerdown', () => {
+      if (soundSystem) {
+        soundSystem.initContext();
+        soundSystem.startAmbientHum();
+      }
+    }, { once: true });
+
+    // ========================================================================
+    // GAVETA DE ÍNDICE / SUMÁRIO
+    // ========================================================================
     const indexDrawer = document.getElementById('indexDrawer');
     const indexList = document.getElementById('indexList');
 
     function openIndexDrawer() {
       indexList.innerHTML = scenesMeta.map((meta, idx) => `
-        <button onclick="goToScene(${idx})" class="w-full text-left p-2.5 rounded-lg flex items-center justify-between transition-colors ${idx === currentSceneIdx ? 'bg-sky-500/20 text-sky-300 font-bold border border-sky-400/40' : 'hover:bg-paper-800 text-paper-muted hover:text-slate-200'
-        }">
+        <button onclick="goToScene(${idx})" class="w-full text-left p-2.5 rounded-lg flex items-center justify-between transition-colors ${idx === currentSceneIdx ? 'bg-sky-500/20 text-sky-300 font-bold border border-sky-400/40' : 'hover:bg-paper-800 text-paper-muted hover:text-slate-200'}">
           <div class="flex items-center gap-3">
             <span class="w-5 text-right opacity-60">${(idx + 1).toString().padStart(2, '0')}.</span>
             <span>${meta.title}</span>
@@ -1198,9 +2564,19 @@
     document.getElementById('btnPrevScene').addEventListener('click', prevScene);
     document.getElementById('btnNextScene').addEventListener('click', nextScene);
 
-    // ------------------------------------------------------------------------
-    // Demonstrações Interativas Específicas
-    // ------------------------------------------------------------------------
+    const dockPrev = document.getElementById('dockBtnPrev');
+    const dockNext = document.getElementById('dockBtnNext');
+    const dockSound = document.getElementById('btnSoundToggle');
+    const dockIndex = document.getElementById('dockBtnIndex');
+
+    if (dockPrev) dockPrev.addEventListener('click', prevScene);
+    if (dockNext) dockNext.addEventListener('click', nextScene);
+    if (dockSound) dockSound.addEventListener('click', toggleSoundUI);
+    if (dockIndex) dockIndex.addEventListener('click', openIndexDrawer);
+
+    // ========================================================================
+    // DEMONSTRAÇÕES E CONTROLES DAS CENAS
+    // ========================================================================
 
     // CENA 01: Propagação de Nós Orgânicos
     let scene1Timer = null;
@@ -1251,9 +2627,10 @@
       }, 350);
     }
 
-    document.getElementById('btnReplayScene1').addEventListener('click', runScene1Infection);
+    const btnReplayS1 = document.getElementById('btnReplayScene1');
+    if (btnReplayS1) btnReplayS1.addEventListener('click', runScene1Infection);
 
-    // CENA 02: Resposta Reflexiva Imediata
+    // CENA 02: Resposta Reflexiva
     function revealReflectiveAnswer(btn, text) {
       const box = btn.parentElement.nextElementSibling;
       box.innerText = text;
@@ -1290,6 +2667,7 @@
     ];
 
     function setHistoryEra(idx) {
+      if (soundSystem) soundSystem.playInteraction();
       const d = historyData[idx];
       document.getElementById('txtTimelineYear').innerText = d.year;
       document.getElementById('historyContentBox').innerHTML = `
@@ -1307,10 +2685,15 @@
           btn.className = "timeline-tab px-3 py-1.5 rounded-lg border border-paper-border hover:border-slate-500 text-paper-muted text-xs font-mono transition-all";
         }
       });
+
+      if (networkEngine) {
+        networkEngine.triggerHistoricalPulse(idx);
+      }
     }
 
     // CENA 06: Salto do Creeper
     function runCreeperJumpDemo() {
+      if (soundSystem) soundSystem.playInteraction();
       const a = document.getElementById('nodeCreeperA');
       const b = document.getElementById('nodeCreeperB');
       const c = document.getElementById('nodeCreeperC');
@@ -1321,17 +2704,22 @@
       b.querySelector('.status-badge').className = "status-badge text-xs font-mono text-paper-coral font-bold animate-pulse";
       b.querySelector('.status-badge').innerText = "Creeper Ativo!";
 
+      if (networkEngine) networkEngine.triggerCreeperJump();
+
       setTimeout(() => {
         b.querySelector('.status-badge').className = "status-badge text-xs font-mono text-slate-400";
         b.querySelector('.status-badge').innerText = "Liberado";
 
         c.querySelector('.status-badge').className = "status-badge text-xs font-mono text-paper-coral font-bold animate-pulse";
         c.querySelector('.status-badge').innerText = "Creeper Saltou para C!";
+        if (soundSystem) soundSystem.playInteraction();
+        if (networkEngine) networkEngine.triggerCreeperJump();
       }, 1500);
     }
 
     // CENA 08: Morris Worm Resposta
     function revealMorrisAnswer(btn, isCorrect) {
+      if (soundSystem) soundSystem.playInteraction();
       const box = document.getElementById('morrisAnswerBox');
       box.classList.remove('hidden');
       if (isCorrect) {
@@ -1345,6 +2733,7 @@
           O Morris Worm não apagava arquivos. Ele foi concebido sem intenção destrutiva. O dano foi decorrente da auto-replicação cega que esgotou os recursos da máquina hospedeira.
         `;
       }
+      if (networkEngine) networkEngine.triggerMorrisRipple();
     }
 
     // CENA 09: Ciclo de Vida
@@ -1369,6 +2758,7 @@
     }
 
     function selectLifecycleStep(idx) {
+      if (soundSystem) soundSystem.playInteraction();
       const step = lifecycleStepsData[idx];
       document.getElementById('lifecycleDetailStep').innerText = `Etapa ${step.num} de 6`;
       document.getElementById('lifecycleDetailTitle').innerText = step.title;
@@ -1383,20 +2773,53 @@
       });
     }
 
-    // CENA 10: Port Scanning Demo
+    // CENA 10: Port Scanning Aprimorado (Trilho Animado SYN / ACK)
     const portsToScan = [
-      { port: 22, name: "SSH (Acesso Remoto)", status: "Fechada / Rejeitada", safe: true },
-      { port: 80, name: "HTTP (Web Local)", status: "Aberta (Sem Falha Crítica)", safe: true },
-      { port: 445, name: "SMB (Compartilhamento de Arquivos)", status: "VULNERÁVEL (Exploit MS17-010)", safe: false },
-      { port: 3389, name: "RDP (Área de Trabalho Remota)", status: "Fechada", safe: true }
+      { port: 22, name: "SSH (Acesso Remoto)", status: "FECHADA [RST recebido]", latency: "0.4ms", safe: true },
+      { port: 80, name: "HTTP (Web Local)", status: "ABERTA [SYN-ACK recebido]", latency: "0.8ms", safe: true },
+      { port: 445, name: "SMB (Compartilhamento)", status: "VULNERÁVEL [MS17-010 DETECTADO]", latency: "1.2ms", safe: false },
+      { port: 3389, name: "RDP (Área Remota)", status: "FILTRADA [TIMEOUT sem resposta]", latency: "250ms", safe: true }
     ];
 
     function runPortScanDemo() {
+      if (soundSystem) soundSystem.playInteraction();
+      const synRunner = document.getElementById('packetRunnerSYN');
+      const ackRunner = document.getElementById('packetRunnerACK');
+      const badge = document.getElementById('scanStatusBadge');
       const resContainer = document.getElementById('portScanResults');
       if (!resContainer) return;
-      resContainer.innerHTML = '<div class="text-sky-300 animate-pulse">Disparando pacotes TCP SYN para 192.168.1.45...</div>';
+
+      if (networkEngine) networkEngine.triggerPortScanWave();
+
+      if (badge) {
+        badge.innerText = "Enviando Sonda TCP SYN...";
+        badge.className = "text-[10px] text-sky-300 px-2 py-0.5 rounded bg-sky-950 border border-sky-400/40 animate-pulse";
+      }
+
+      if (synRunner) {
+        synRunner.style.opacity = '1';
+        synRunner.style.left = '72%';
+      }
 
       setTimeout(() => {
+        if (synRunner) synRunner.style.opacity = '0';
+        if (ackRunner) {
+          ackRunner.style.opacity = '1';
+          ackRunner.style.left = '12%';
+        }
+        if (badge) {
+          badge.innerText = "Respostas Recebidas (SYN-ACK / RST)";
+          badge.className = "text-[10px] text-amber-300 px-2 py-0.5 rounded bg-amber-950 border border-amber-400/40";
+        }
+      }, 450);
+
+      setTimeout(() => {
+        if (ackRunner) ackRunner.style.opacity = '0';
+        if (badge) {
+          badge.innerText = "Alvo Mapeado";
+          badge.className = "text-[10px] text-rose-300 px-2 py-0.5 rounded bg-rose-950 border border-rose-500/40 font-bold";
+        }
+
         resContainer.innerHTML = portsToScan.map(p => `
           <div class="flex items-center justify-between p-2 rounded bg-paper-950 border border-paper-border ${!p.safe ? 'border-paper-coral/60 bg-rose-950/20' : ''}">
             <div class="flex items-center gap-2">
@@ -1404,14 +2827,134 @@
               <span class="font-bold text-slate-200">Porta ${p.port}</span>
               <span class="text-paper-muted">(${p.name})</span>
             </div>
-            <span class="${p.safe ? 'text-slate-400' : 'text-paper-coral font-bold'}">${p.status}</span>
+            <div class="flex items-center gap-2">
+              <span class="text-[10px] text-slate-500 font-mono">${p.latency}</span>
+              <span class="${p.safe ? 'text-slate-400' : 'text-paper-coral font-bold'}">${p.status}</span>
+            </div>
           </div>
         `).join('');
-      }, 600);
+      }, 850);
     }
 
     const btnScan = document.getElementById('btnScanPorts');
     if (btnScan) btnScan.addEventListener('click', runPortScanDemo);
+
+    // CENA 14: Efeito Cascata Interativo
+    let cascadeAutoTimer = null;
+    function setCascadeStep(step) {
+      if (soundSystem) soundSystem.playInteraction();
+      document.querySelectorAll('.cascade-step-btn').forEach((btn, idx) => {
+        if (idx === step) {
+          btn.className = "cascade-step-btn px-2.5 py-1 rounded-lg border border-paper-coral bg-rose-500/20 text-rose-200 font-bold transition-all";
+        } else {
+          btn.className = "cascade-step-btn px-2.5 py-1 rounded-lg border border-paper-border hover:border-slate-500 text-paper-muted transition-all";
+        }
+      });
+
+      const hosts = Math.pow(2, step);
+      const probes = hosts * 150;
+      const saturation = Math.min(100, Math.round((hosts / 32) * 100));
+
+      const countEl = document.getElementById('cascadeTransmittersCount');
+      const probesEl = document.getElementById('cascadeProbesRate');
+      const satEl = document.getElementById('cascadeSaturationStatus');
+
+      if (countEl) countEl.innerText = `${hosts} ${hosts === 1 ? 'Host' : 'Hosts'}`;
+      if (probesEl) probesEl.innerText = `~${probes.toLocaleString()} pkts/s`;
+      if (satEl) {
+        satEl.innerText = `${saturation}%`;
+        satEl.className = saturation >= 80 ? 'text-paper-coral font-bold text-sm animate-pulse' : (saturation >= 40 ? 'text-amber-400 font-bold text-sm' : 'text-sky-400 font-bold text-sm');
+      }
+
+      document.querySelectorAll('.cascade-row').forEach((row, idx) => {
+        if (idx === step) {
+          row.classList.add('bg-paper-950/70', 'border-paper-coral/40');
+        } else {
+          row.classList.remove('bg-paper-950/70', 'border-paper-coral/40');
+        }
+      });
+
+      if (networkEngine) {
+        networkEngine.triggerCascadeStep(step);
+      }
+    }
+
+    function runAutoCascadeAnimation() {
+      if (soundSystem) soundSystem.playInteraction();
+      if (cascadeAutoTimer) clearInterval(cascadeAutoTimer);
+      let s = 0;
+      setCascadeStep(0);
+      cascadeAutoTimer = setInterval(() => {
+        s++;
+        if (s > 5) {
+          clearInterval(cascadeAutoTimer);
+          return;
+        }
+        setCascadeStep(s);
+      }, 700);
+    }
+
+    // CENA 15: Taxa Reprodutiva Matemática
+    function setMathReproductionRate(r) {
+      if (soundSystem) soundSystem.playInteraction();
+      document.querySelectorAll('.math-rate-btn').forEach(btn => {
+        btn.className = "math-rate-btn px-3 py-1 rounded-lg border border-paper-border hover:border-slate-400 text-paper-muted transition-all";
+      });
+
+      const path = document.getElementById('saturationCurvePath');
+      const dot = document.getElementById('saturationCurveDot');
+      const badge = document.getElementById('rateLabelBadge');
+      const desc = document.getElementById('mathRateDescription');
+      const table = document.getElementById('mathProjectionTable');
+
+      if (r === 1.0) {
+        document.getElementById('btnRate1').className = "math-rate-btn px-3 py-1 rounded-lg border border-sky-400 bg-sky-500/20 text-sky-200 font-bold transition-all";
+        if (badge) badge.innerText = "r = 1.0 (Linear)";
+        if (path) path.setAttribute('d', "M 25 119 C 100 119, 140 118, 180 110 C 220 102, 260 95, 290 90");
+        if (dot) { dot.setAttribute('cx', '180'); dot.setAttribute('cy', '110'); }
+        if (desc) desc.innerText = "Em r = 1.0, o contágio é estritamente linear e previsível, permitindo contenção manual.";
+        if (table) {
+          table.innerHTML = `
+            <div class="flex justify-between"><span class="text-slate-400">Minuto 0:</span> <span class="text-slate-200 font-bold">1 nó</span></div>
+            <div class="flex justify-between"><span class="text-slate-400">Minuto 5:</span> <span class="text-slate-200 font-bold">5 nós</span></div>
+            <div class="flex justify-between"><span class="text-slate-400">Minuto 10:</span> <span class="text-slate-200 font-bold">10 nós</span></div>
+            <div class="flex justify-between"><span class="text-slate-400">Minuto 15:</span> <span class="text-sky-300 font-bold">15 nós</span></div>
+          `;
+        }
+      } else if (r === 1.4) {
+        document.getElementById('btnRate2').className = "math-rate-btn px-3 py-1 rounded-lg border border-amber-400 bg-amber-500/20 text-amber-200 font-bold transition-all";
+        if (badge) badge.innerText = "r = 1.4 (Moderado)";
+        if (path) path.setAttribute('d', "M 25 119 C 90 119, 130 112, 170 80 C 210 48, 250 35, 290 30");
+        if (dot) { dot.setAttribute('cx', '170'); dot.setAttribute('cy', '80'); }
+        if (desc) desc.innerText = "Em r = 1.4, a aceleração já supera a velocidade de resposta de equipes humanas não automatizadas.";
+        if (table) {
+          table.innerHTML = `
+            <div class="flex justify-between"><span class="text-slate-400">Minuto 0:</span> <span class="text-slate-200 font-bold">1 nó</span></div>
+            <div class="flex justify-between"><span class="text-slate-400">Minuto 5:</span> <span class="text-slate-200 font-bold">6 nós</span></div>
+            <div class="flex justify-between"><span class="text-slate-400">Minuto 10:</span> <span class="text-amber-400 font-bold">29 nós</span></div>
+            <div class="flex justify-between"><span class="text-slate-400">Minuto 15:</span> <span class="text-amber-300 font-bold">155 nós</span></div>
+          `;
+        }
+      } else {
+        document.getElementById('btnRate3').className = "math-rate-btn px-3 py-1 rounded-lg border border-paper-coral bg-rose-500/20 text-rose-200 font-bold transition-all";
+        if (badge) badge.innerText = "r = 2.0 (Explosão Crítica)";
+        if (path) path.setAttribute('d', "M 25 119 C 100 119, 140 115, 180 60 C 210 20, 240 15, 290 15");
+        if (dot) { dot.setAttribute('cx', '210'); dot.setAttribute('cy', '35'); }
+        if (desc) desc.innerText = "Em r = 2.0, a cada ciclo os nós contaminados duplicam o poder de varredura global.";
+        if (table) {
+          table.innerHTML = `
+            <div class="flex justify-between"><span class="text-slate-400">Minuto 0:</span> <span class="text-slate-200 font-bold">1 nó</span></div>
+            <div class="flex justify-between"><span class="text-slate-400">Minuto 5:</span> <span class="text-slate-200 font-bold">32 nós</span></div>
+            <div class="flex justify-between"><span class="text-slate-400">Minuto 10:</span> <span class="text-amber-400 font-bold">1.024 nós</span></div>
+            <div class="flex justify-between"><span class="text-slate-400">Minuto 15:</span> <span class="text-paper-coral font-bold">32.768 nós!</span></div>
+          `;
+        }
+      }
+
+      if (networkEngine) {
+        networkEngine.setReproductionRate(r);
+      }
+    }
 
     // CENA 17: Defesa em Profundidade com Interruptores
     const defenseLayers = [
@@ -1425,19 +2968,21 @@
       const container = document.getElementById('defenseLayersContainer');
       if (!container) return;
       container.innerHTML = defenseLayers.map((layer, idx) => `
-        <div class="p-4 rounded-xl bg-paper-900 border border-paper-border flex flex-col sm:flex-row sm:items-center justify-between gap-3" id="layerBox-${idx}">
+        <div class="p-4 rounded-xl bg-paper-900/85 backdrop-blur-md border border-paper-border flex flex-col sm:flex-row sm:items-center justify-between gap-3 card-float-${(idx % 4) + 1} glow-emerald tech-corner-card transition-all duration-300" id="layerBox-${idx}">
           <div class="space-y-1 text-left">
             <h4 class="text-xs font-bold text-slate-200 font-mono">${layer.name}</h4>
             <p class="text-[11px] text-paper-muted leading-relaxed">${layer.desc}</p>
           </div>
-          <button onclick="toggleDefenseLayer(${idx})" class="toggle-def-btn px-3 py-1.5 rounded-lg font-mono text-xs font-semibold transition-all flex items-center gap-1.5 self-start sm:self-auto bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">
-            <span class="w-2 h-2 rounded-full bg-emerald-400"></span> Ativa
+          <button onclick="toggleDefenseLayer(${idx})" class="toggle-def-btn px-3 py-1.5 rounded-lg font-mono text-xs font-semibold transition-all flex items-center gap-1.5 self-start sm:self-auto ${layer.active ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40' : 'bg-paper-800 text-paper-muted border border-paper-border'}">
+            <span class="w-2 h-2 rounded-full ${layer.active ? 'bg-emerald-400' : 'bg-slate-500'}"></span>
+            ${layer.active ? 'Ativa' : 'Desativada'}
           </button>
         </div>
       `).join('');
     }
 
     function toggleDefenseLayer(idx) {
+      if (soundSystem) soundSystem.playInteraction();
       defenseLayers[idx].active = !defenseLayers[idx].active;
       const box = document.getElementById(`layerBox-${idx}`);
       const btn = box.querySelector('.toggle-def-btn');
@@ -1445,30 +2990,44 @@
       if (defenseLayers[idx].active) {
         btn.className = "toggle-def-btn px-3 py-1.5 rounded-lg font-mono text-xs font-semibold transition-all flex items-center gap-1.5 self-start sm:self-auto bg-emerald-500/20 text-emerald-300 border border-emerald-500/40";
         btn.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-400"></span> Ativa`;
-        box.classList.remove('opacity-60', 'border-paper-coral/30');
+        box.classList.remove('opacity-60', 'border-paper-coral/30', 'glow-coral');
+        box.classList.add('glow-emerald');
       } else {
         btn.className = "toggle-def-btn px-3 py-1.5 rounded-lg font-mono text-xs font-semibold transition-all flex items-center gap-1.5 self-start sm:self-auto bg-paper-800 text-paper-muted border border-paper-border";
         btn.innerHTML = `<span class="w-2 h-2 rounded-full bg-slate-500"></span> Desativada`;
-        box.classList.add('opacity-60', 'border-paper-coral/30');
+        box.classList.remove('glow-emerald');
+        box.classList.add('opacity-60', 'border-paper-coral/30', 'glow-coral');
       }
 
       const activeCount = defenseLayers.filter(l => l.active).length;
       const scoreTxt = document.getElementById('defenseScoreText');
-      if (activeCount === 4) {
-        scoreTxt.className = "text-emerald-400 font-bold";
-        scoreTxt.innerText = "100% Protegido (Defesa em Profundidade Total)";
-      } else if (activeCount >= 2) {
-        scoreTxt.className = "text-amber-400 font-bold";
-        scoreTxt.innerText = `${activeCount * 25}% Protegido (Vulnerabilidade a Movimento Lateral)`;
-      } else {
-        scoreTxt.className = "text-paper-coral font-bold animate-pulse";
-        scoreTxt.innerText = `${activeCount * 25}% Crítico (Risco Extremo de Propagação Imediata)`;
+      if (scoreTxt) {
+        if (activeCount === 4) {
+          scoreTxt.className = "text-emerald-400 font-bold";
+          scoreTxt.innerText = "100% Protegido (Defesa em Profundidade Total)";
+        } else if (activeCount >= 2) {
+          scoreTxt.className = "text-amber-400 font-bold";
+          scoreTxt.innerText = `${activeCount * 25}% Protegido (Vulnerabilidade a Movimento Lateral)`;
+        } else {
+          scoreTxt.className = "text-paper-coral font-bold animate-pulse";
+          scoreTxt.innerText = `${activeCount * 25}% Crítico (Risco Extremo de Propagação Imediata)`;
+        }
+      }
+
+      // Sincroniza diretamente com o motor da rede
+      if (networkEngine) {
+        networkEngine.setDefenseState({
+          segmentation: defenseLayers[0].active,
+          patching: defenseLayers[1].active,
+          firewall: defenseLayers[2].active,
+          monitoring: defenseLayers[3].active
+        });
       }
     }
 
-    // ------------------------------------------------------------------------
-    // Gatilhos de Inicialização por Cena
-    // ------------------------------------------------------------------------
+    // ========================================================================
+    // GATILHOS POR CENA
+    // ========================================================================
     function onSceneEnter(idx) {
       if (idx === 0) {
         initScene1Grid();
@@ -1478,6 +3037,10 @@
         initLifecycleDiagram();
       } else if (idx === 9) {
         runPortScanDemo();
+      } else if (idx === 13) {
+        setCascadeStep(0);
+      } else if (idx === 14) {
+        setMathReproductionRate(2.0);
       } else if (idx === 16) {
         initDefenseLayers();
       }
@@ -1485,6 +3048,8 @@
 
     // Inicialização ao carregar o DOM
     window.addEventListener('DOMContentLoaded', () => {
+      soundSystem = new SoundSystem();
+      networkEngine = new NetworkEngine('networkCanvas');
       updateSceneView();
       initScene1Grid();
     });
